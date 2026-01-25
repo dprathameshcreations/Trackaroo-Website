@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trackaroo - Powerful Subscription Management</title>
-    <meta name="description" content="The ultimate tool to track expenses, manage team subscriptions, and secure your digital assets.">
+    <title>Trackaroo - Enterprise Subscription Governance</title>
+    <meta name="description" content="Stop SaaS sprawl. Centralize subscription management, automate renewal alerts, and optimize spend with Trackaroo.">
     
-    <!-- Favicon (Uses your app logo) -->
+    <!-- Favicon -->
     <link rel="shortcut icon" href="logo.ico" type="image/x-icon">
     
     <!-- Tailwind CSS -->
@@ -16,152 +16,176 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Dark Theme Background */
         .hero-pattern {
-            background-color: #f8fafc;
-            background-image: radial-gradient(#3b82f6 0.5px, transparent 0.5px), radial-gradient(#3b82f6 0.5px, #f8fafc 0.5px);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
+            background-color: #020617; /* slate-950 */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
         }
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
+
+        /* Particle Canvas */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.7;
+            pointer-events: none;
         }
+
+        /* Animations */
+        .animate-float { animation: float 6s ease-in-out infinite; }
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
         }
+
+        .animate-blob { animation: blob 10s infinite; }
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-950 text-slate-200 selection:bg-blue-500 selection:text-white overflow-x-hidden">
 
     <!-- Navigation -->
-    <nav class="bg-white/90 backdrop-blur-md fixed w-full z-50 border-b border-slate-200 shadow-sm transition-all duration-300">
+    <nav class="bg-slate-950/80 backdrop-blur-lg fixed w-full z-50 border-b border-white/5 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 
                 <!-- Logo Area -->
-                <div class="flex items-center gap-3">
-                    <!-- App Logo from file -->
-                    <img src="logo.ico" alt="Trackaroo Logo" class="w-10 h-10 rounded-lg shadow-md border border-slate-100">
-                    <span class="font-extrabold text-2xl tracking-tight text-slate-900">Trackaroo</span>
+                <div class="flex items-center gap-3 group cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <img src="logo.ico" alt="Trackaroo Logo" class="w-10 h-10 rounded-lg shadow-lg shadow-blue-500/20 border border-white/10 group-hover:rotate-12 transition duration-300">
+                    <span class="font-extrabold text-2xl tracking-tight text-white group-hover:text-blue-400 transition">Trackaroo</span>
                 </div>
                 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#features" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Features</a>
-                    <a href="#why-trackaroo" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Why Trackaroo</a>
-                    <a href="#contact" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Contact Dev</a>
-                    <!-- Added js-download-link class -->
-                    <a href="#download" class="js-download-link bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-blue-600 hover:shadow-lg transition transform hover:-translate-y-0.5">
-                        Download App
+                    <a href="#features" class="text-sm font-medium text-slate-400 hover:text-white hover:scale-105 transition">Capabilities</a>
+                    <a href="#why-trackaroo" class="text-sm font-medium text-slate-400 hover:text-white hover:scale-105 transition">Analytics</a>
+                    <a href="#contact" class="text-sm font-medium text-slate-400 hover:text-white hover:scale-105 transition">Enterprise Support</a>
+                    <a href="#download" class="js-download-link bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-blue-600/30 hover:bg-blue-500 hover:shadow-blue-500/40 transition transform hover:-translate-y-0.5">
+                        Download Now
                     </a>
                 </div>
 
                 <!-- Mobile Menu Button -->
                 <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-blue-600 focus:outline-none p-2">
+                    <button id="mobile-menu-btn" class="text-slate-300 hover:text-white focus:outline-none p-2">
                         <i class="fa-solid fa-bars text-2xl"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Menu (Hidden by default) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 absolute w-full left-0 shadow-xl">
-            <div class="px-4 pt-2 pb-6 space-y-2">
-                <a href="#features" class="block px-3 py-3 rounded-lg text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 border-b border-slate-50">Features</a>
-                <a href="#why-trackaroo" class="block px-3 py-3 rounded-lg text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 border-b border-slate-50">Why Trackaroo</a>
-                <a href="#contact" class="block px-3 py-3 rounded-lg text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 border-b border-slate-50">Contact Developer</a>
-                <!-- Added js-download-link class -->
-                <a href="#download" class="js-download-link block w-full text-center mt-4 bg-blue-600 text-white px-4 py-3 rounded-xl font-bold shadow-lg shadow-blue-200">Download Now</a>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-900/95 border-t border-white/10 absolute w-full left-0 shadow-2xl backdrop-blur-xl">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="#features" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-white hover:bg-white/5 transition">Capabilities</a>
+                <a href="#why-trackaroo" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-white hover:bg-white/5 transition">Analytics</a>
+                <a href="#contact" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-white hover:bg-white/5 transition">Contact Support</a>
+                <a href="#download" class="js-download-link block w-full text-center mt-4 bg-blue-600 text-white px-4 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/50">Download Now</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="pt-36 pb-24 hero-pattern overflow-hidden relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
+    <section class="pt-36 pb-24 hero-pattern relative min-h-screen flex items-center overflow-hidden">
+        
+        <!-- 🕸️ Tech Particle Network Canvas -->
+        <canvas id="particle-canvas"></canvas>
+
+        <!-- Background Glows (Parallax) -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="parallax-element absolute top-20 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] animate-blob" data-speed="2"></div>
+            <div class="parallax-element absolute bottom-20 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] animate-blob" style="animation-delay: 2s" data-speed="-2"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-16 relative z-10">
             
             <!-- Text Content -->
-            <div class="md:w-1/2 text-center md:text-left z-10">
-                <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-xs font-bold mb-6 shadow-sm uppercase tracking-wide">
-                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <div class="md:w-1/2 text-center md:text-left">
+                <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-blue-300 px-4 py-1.5 rounded-full text-xs font-bold mb-8 shadow-inner backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
                     Latest Release v1.0.0
                 </div>
-                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 text-slate-900 tracking-tight">
-                    The Powerful Way to <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Manage Assets</span>
+                
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 text-white tracking-tight drop-shadow-2xl">
+                    Eliminate <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">SaaS Sprawl</span>
                 </h1>
-                <p class="text-lg md:text-xl text-slate-600 mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
-                    Stop losing money on forgotten subscriptions. Trackaroo gives you and your team a secure, unified dashboard to control recurring expenses and track licenses effortlessly.
+                
+                <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                    Stop revenue leakage. Centralize your organization's subscription intelligence, automate renewal alerts, and optimize recurring spend with military-grade security.
                 </p>
                 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start" id="download">
-                    <!-- Dynamic Download Button -->
-                    <!-- Added js-download-link class -->
-                    <a id="download-btn" href="#" class="js-download-link group flex items-center justify-center gap-4 bg-slate-900 text-white px-8 py-4 rounded-xl text-lg font-bold shadow-2xl hover:bg-blue-600 hover:-translate-y-1 transition duration-300">
-                        <i class="fa-brands fa-windows text-2xl group-hover:scale-110 transition"></i>
+                <div class="flex flex-col sm:flex-row gap-5 justify-center md:justify-start" id="download">
+                    <a id="download-btn" href="#" class="js-download-link group flex items-center justify-center gap-4 bg-white text-slate-900 px-8 py-4 rounded-xl text-lg font-bold shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] hover:scale-105 transition duration-300 border border-transparent hover:border-blue-300">
+                        <i class="fa-brands fa-windows text-2xl text-blue-600"></i>
                         <div class="text-left">
-                            <span class="block text-xs font-medium text-slate-300 uppercase">Get it now</span>
+                            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Get it now</span>
                             <span id="btn-text">Download for Windows</span>
                         </div>
                     </a>
                 </div>
-                <p id="version-info" class="mt-4 text-sm text-slate-500 font-medium flex items-center justify-center md:justify-start gap-2">
-                    <i class="fa-solid fa-spinner fa-spin text-blue-500"></i> Connecting to update server...
+                <p id="version-info" class="mt-6 text-sm text-slate-500 font-medium flex items-center justify-center md:justify-start gap-2 h-6">
+                    <i class="fa-solid fa-circle-notch fa-spin text-blue-500"></i> Authenticating with update server...
                 </p>
             </div>
 
-            <!-- Visual -->
-            <div class="md:w-1/2 relative perspective-1000 mt-12 md:mt-0">
-                <!-- Decorative Blobs -->
-                <div class="absolute top-10 right-10 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob w-72 h-72"></div>
-                <div class="absolute bottom-10 left-10 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 w-72 h-72"></div>
-                
-                <!-- 3D Card Effect -->
-                <div class="relative bg-white border border-slate-200 rounded-3xl shadow-2xl shadow-slate-200/50 p-3 animate-float transform rotate-y-6 rotate-x-6 hover:rotate-0 transition duration-500">
-                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl overflow-hidden aspect-video flex items-center justify-center relative group">
+            <!-- 3D Visual (Parallax Target) -->
+            <div class="md:w-1/2 relative perspective-1000 parallax-container">
+                <!-- 3D Card -->
+                <div class="parallax-element relative bg-slate-900 border border-white/10 rounded-3xl shadow-2xl shadow-blue-900/20 p-2 animate-float transform rotate-y-6 rotate-x-6 hover:rotate-0 transition duration-700 ease-out" data-speed="1.5">
+                    
+                    <!-- Glass Reflection -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl pointer-events-none z-20"></div>
+
+                    <div class="bg-slate-950 rounded-2xl overflow-hidden aspect-video flex items-center justify-center relative group">
                         <!-- Dashboard UI Simulation -->
-                        <div class="absolute inset-0 flex flex-col p-6 opacity-90">
-                            <!-- Fake Header -->
-                            <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
-                                <div class="h-6 w-32 bg-white/20 rounded-lg"></div>
+                        <div class="absolute inset-0 flex flex-col p-6 opacity-100">
+                            <!-- Header -->
+                            <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
+                                <div class="h-6 w-32 bg-white/10 rounded-lg animate-pulse"></div>
                                 <div class="flex gap-2">
-                                    <div class="h-8 w-8 bg-blue-500 rounded-full opacity-80"></div>
+                                    <div class="h-8 w-8 bg-blue-600 rounded-full shadow-lg shadow-blue-500/50"></div>
                                     <div class="h-8 w-8 bg-white/10 rounded-full"></div>
                                 </div>
                             </div>
-                            <!-- Fake Grid -->
+                            <!-- Grid -->
                             <div class="grid grid-cols-3 gap-4 mb-6">
-                                <div class="h-24 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm"></div>
-                                <div class="h-24 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm"></div>
-                                <div class="h-24 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm"></div>
+                                <div class="h-24 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-white/5 shadow-inner"></div>
+                                <div class="h-24 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-white/5 shadow-inner"></div>
+                                <div class="h-24 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-white/5 shadow-inner"></div>
                             </div>
-                            <!-- Fake List -->
-                            <div class="flex-1 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm p-4 space-y-3">
+                            <!-- List Items -->
+                            <div class="flex-1 bg-white/5 rounded-xl border border-white/5 p-4 space-y-3">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-red-500/20"></div>
-                                    <div class="h-3 w-1/2 bg-white/20 rounded"></div>
+                                    <div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center"><div class="w-2 h-2 bg-red-500 rounded-full"></div></div>
+                                    <div class="h-3 w-1/2 bg-white/10 rounded"></div>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-blue-500/20"></div>
-                                    <div class="h-3 w-3/4 bg-white/20 rounded"></div>
+                                    <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center"><div class="w-2 h-2 bg-green-500 rounded-full"></div></div>
+                                    <div class="h-3 w-3/4 bg-white/10 rounded"></div>
                                 </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-green-500/20"></div>
-                                    <div class="h-3 w-2/3 bg-white/20 rounded"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Overlay Text -->
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="bg-black/40 backdrop-blur-md border border-white/10 px-8 py-4 rounded-full text-center shadow-2xl">
-                                <span class="text-white font-bold text-lg tracking-wide"><i class="fa-solid fa-lock mr-2 text-green-400"></i> Secure Workspace</span>
                             </div>
                         </div>
                     </div>
@@ -171,95 +195,109 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-24 bg-white relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="features" class="py-24 bg-slate-900 relative border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-20">
-                <h2 class="text-4xl font-extrabold text-slate-900 mb-4">Why Trackaroo is Essential</h2>
-                <p class="text-xl text-slate-600 max-w-2xl mx-auto">Built for professionals who demand reliability, security, and efficiency.</p>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Enterprise-Grade Governance</h2>
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto">Designed for decision-makers who require absolute clarity and security.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Feature 1 -->
-                <div class="group bg-slate-50 p-10 rounded-3xl border border-slate-100 hover:border-blue-100 hover:bg-blue-50/30 hover:shadow-xl hover:-translate-y-2 transition duration-300">
-                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-lg shadow-blue-600/20 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-users-viewfinder"></i>
+                <div class="group bg-slate-800/50 p-8 rounded-3xl border border-white/5 hover:border-blue-500/50 hover:bg-slate-800 hover:-translate-y-2 transition duration-300 backdrop-blur-sm">
+                    <div class="w-14 h-14 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center text-2xl mb-6 border border-blue-500/20 group-hover:scale-110 transition group-hover:bg-blue-600 group-hover:text-white">
+                        <i class="fa-solid fa-network-wired"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4 text-slate-900">Team-Centric Design</h3>
-                    <p class="text-slate-600 leading-relaxed">Don't work in silos. Create specific workspaces for different departments or clients. Invite members securely and manage access with strict Admin/User roles.</p>
+                    <h3 class="text-xl font-bold mb-4 text-white">Multi-Tenant Architecture</h3>
+                    <p class="text-slate-400 leading-relaxed">Operate efficiently across silos. Isolate Personal, Business, and Client expenses into distinct, secure workspaces with role-based access control (RBAC).</p>
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="group bg-slate-50 p-10 rounded-3xl border border-slate-100 hover:border-red-100 hover:bg-red-50/30 hover:shadow-xl hover:-translate-y-2 transition duration-300">
-                    <div class="w-14 h-14 bg-red-500 text-white rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-lg shadow-red-500/20 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-bell-concierge"></i>
+                <div class="group bg-slate-800/50 p-8 rounded-3xl border border-white/5 hover:border-red-500/50 hover:bg-slate-800 hover:-translate-y-2 transition duration-300 backdrop-blur-sm">
+                    <div class="w-14 h-14 bg-red-600/20 text-red-400 rounded-2xl flex items-center justify-center text-2xl mb-6 border border-red-500/20 group-hover:scale-110 transition group-hover:bg-red-600 group-hover:text-white">
+                        <i class="fa-solid fa-chart-line"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4 text-slate-900">Zero Missed Payments</h3>
-                    <p class="text-slate-600 leading-relaxed">Forget sticky notes. Our intelligent engine monitors renewal dates and sends automated desktop and email alerts to the right people at the right time.</p>
+                    <h3 class="text-xl font-bold mb-4 text-white">Proactive Renewal Intel</h3>
+                    <p class="text-slate-400 leading-relaxed">Automate your financial defense. The intelligent engine forecasts renewals and dispatches prioritized alerts via Desktop & Email, preventing unwanted auto-debits.</p>
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="group bg-slate-50 p-10 rounded-3xl border border-slate-100 hover:border-green-100 hover:bg-green-50/30 hover:shadow-xl hover:-translate-y-2 transition duration-300">
-                    <div class="w-14 h-14 bg-green-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-lg shadow-green-600/20 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-fingerprint"></i>
+                <div class="group bg-slate-800/50 p-8 rounded-3xl border border-white/5 hover:border-green-500/50 hover:bg-slate-800 hover:-translate-y-2 transition duration-300 backdrop-blur-sm">
+                    <div class="w-14 h-14 bg-green-600/20 text-green-400 rounded-2xl flex items-center justify-center text-2xl mb-6 border border-green-500/20 group-hover:scale-110 transition group-hover:bg-green-600 group-hover:text-white">
+                        <i class="fa-solid fa-shield-halved"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4 text-slate-900">Fortress Security</h3>
-                    <p class="text-slate-600 leading-relaxed">Your financial data is sensitive. We use military-grade encryption for storage. Critical actions (like deletions) require double-verification passwords.</p>
+                    <h3 class="text-xl font-bold mb-4 text-white">Data Sovereignty</h3>
+                    <p class="text-slate-400 leading-relaxed">Your financial data is fortified with end-to-end encryption. Critical modifications trigger mandatory double-verification protocols, ensuring zero unauthorized changes.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Detailed Benefits -->
-    <section id="why-trackaroo" class="py-20 bg-slate-50 border-t border-slate-200">
+    <!-- Dashboard Preview (Indian Context) -->
+    <section id="why-trackaroo" class="py-24 bg-slate-950 border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                
+                <!-- Text -->
                 <div class="order-2 md:order-1">
-                    <h2 class="text-3xl font-bold mb-6 text-slate-900">Smart Dashboard & Analytics</h2>
-                    <p class="text-lg text-slate-600 mb-6">Instantly see where your budget is going. Track monthly and yearly costs automatically calculated based on your subscription cycles.</p>
-                    <ul class="space-y-4">
-                        <li class="flex items-center gap-3">
-                            <i class="fa-solid fa-check text-green-500 bg-green-100 p-1 rounded-full text-xs"></i>
-                            <span class="font-medium text-slate-700">Real-time Cloud Sync</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fa-solid fa-check text-green-500 bg-green-100 p-1 rounded-full text-xs"></i>
-                            <span class="font-medium text-slate-700">Detailed Activity Logs</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fa-solid fa-check text-green-500 bg-green-100 p-1 rounded-full text-xs"></i>
-                            <span class="font-medium text-slate-700">CSV Data Export</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="order-1 md:order-2 bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
-                    <div class="space-y-6">
-                        <!-- Example 1: Zoho One -->
-                        <div class="flex items-center gap-4 border-b border-slate-100 pb-4">
-                            <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
-                                <i class="fa-solid fa-briefcase text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-slate-900">Zoho One</h4>
-                                <p class="text-sm text-slate-500">Business Suite • Yearly</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-slate-900">₹45,000.00</p>
-                                <p class="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded-full">Active</p>
-                            </div>
+                    <h2 class="text-3xl font-bold mb-6 text-white">Precision Financial Forecasting <span class="text-blue-500">.</span></h2>
+                    <p class="text-lg text-slate-400 mb-8">Visualize your burn rate instantly. Our algorithms aggregate monthly and annual liabilities, providing a clear picture of your recurring commitments.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                            <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"><i class="fa-solid fa-rotate"></i></div>
+                            <span class="font-medium text-slate-200">Real-time Cloud Sync</span>
                         </div>
-                        
-                        <!-- Example 2: JioFiber -->
-                        <div class="flex items-center gap-4 border-b border-slate-100 pb-4 opacity-70">
-                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
-                                <i class="fa-solid fa-wifi text-xl"></i>
+                        <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                            <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <span class="font-medium text-slate-200">Audit-Ready Logs</span>
+                        </div>
+                        <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                            <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-download"></i></div>
+                            <span class="font-medium text-slate-200">One-Click CSV Export</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Card Example -->
+                <div class="order-1 md:order-2 parallax-element" data-speed="1">
+                    <div class="bg-slate-900 p-8 rounded-3xl shadow-2xl shadow-black/50 border border-white/10 relative overflow-hidden">
+                        <!-- Glow effect -->
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+                        <div class="space-y-4 relative z-10">
+                            <!-- Example 1: Zoho One -->
+                            <div class="flex items-center gap-4 border-b border-white/5 pb-4 group hover:bg-white/5 p-3 rounded-xl transition cursor-default">
+                                <div class="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center text-yellow-400 font-bold border border-yellow-500/20">
+                                    <i class="fa-solid fa-briefcase text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-white group-hover:text-blue-400 transition">Zoho One</h4>
+                                    <p class="text-sm text-slate-500">Business Suite • Yearly</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-white tracking-wide">₹45,000</p>
+                                    <span class="inline-flex items-center gap-1 bg-green-500/10 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-500/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> ACTIVE
+                                    </span>
+                                </div>
                             </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-slate-900">JioFiber</h4>
-                                <p class="text-sm text-slate-500">Office Internet • Monthly</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-bold text-slate-900">₹999.00</p>
-                                <p class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded-full">Expiring!</p>
+                            
+                            <!-- Example 2: JioFiber -->
+                            <div class="flex items-center gap-4 group hover:bg-white/5 p-3 rounded-xl transition cursor-default">
+                                <div class="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center text-blue-400 font-bold border border-blue-600/20">
+                                    <i class="fa-solid fa-wifi text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-white group-hover:text-blue-400 transition">JioFiber</h4>
+                                    <p class="text-sm text-slate-500">Office Internet • Monthly</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-white tracking-wide">₹999</p>
+                                    <span class="inline-flex items-center gap-1 bg-red-500/10 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-500/20">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> EXPIRING
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -269,55 +307,48 @@
     </section>
 
     <!-- Developer Contact Section -->
-    <section id="contact" class="py-24 bg-slate-900 text-white relative overflow-hidden">
-        <!-- Background accents -->
-        <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
-            <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-600 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-600 rounded-full blur-3xl"></div>
-        </div>
-
+    <section id="contact" class="py-24 bg-[#0B1120] relative overflow-hidden border-t border-white/5">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">Need Help or Custom Solutions?</h2>
-                <p class="text-slate-400">Get in touch with the development team directly.</p>
+                <h2 class="text-3xl font-bold mb-4 text-white">Need Custom Integration?</h2>
+                <p class="text-slate-400">Directly contact the core development team for enterprise support.</p>
             </div>
             
-            <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10">
+            <div class="bg-slate-800/30 backdrop-blur-md rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10 hover:border-blue-500/30 transition duration-500">
                 
                 <!-- Developer Identity -->
                 <div class="text-center md:text-left">
-                    <div class="mb-4 inline-block p-3 bg-blue-600/20 rounded-2xl">
+                    <div class="mb-4 inline-block p-3 bg-blue-600/20 rounded-2xl border border-blue-500/20">
                         <i class="fa-solid fa-code text-3xl text-blue-400"></i>
                     </div>
                     <p class="text-blue-400 font-bold tracking-widest text-xs uppercase mb-1">Developed By</p>
-                    <h3 class="text-4xl font-extrabold tracking-tight">Dprathamesh Creations</h3>
-                    <p class="text-slate-400 mt-2 text-lg">Professional Software Development</p>
+                    <h3 class="text-4xl font-extrabold tracking-tight text-white">Dprathamesh Creations</h3>
+                    <p class="text-slate-400 mt-2 text-lg">Professional Software Solutions</p>
                 </div>
 
-                <!-- Divider -->
                 <div class="hidden md:block w-px h-32 bg-white/10"></div>
 
-                <!-- Contact Details -->
+                <!-- Interactive Contact Details -->
                 <div class="flex flex-col gap-6 w-full md:w-auto">
-                    <!-- Phone -->
-                    <a href="tel:9768117514" class="group flex items-center gap-5 bg-white/5 p-4 rounded-xl hover:bg-white/10 transition border border-white/5 hover:border-green-500/50">
-                        <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition">
+                    <!-- CALL BUTTON: Interactive href="tel:..." -->
+                    <a href="tel:+919768117514" class="group flex items-center gap-5 bg-white/5 p-4 rounded-xl hover:bg-blue-600 transition border border-white/5 hover:border-blue-400">
+                        <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl">
                             <i class="fa-solid fa-phone"></i>
                         </div>
                         <div>
-                            <p class="text-xs text-slate-400 font-semibold uppercase">Call Support</p>
-                            <p class="font-bold text-xl tracking-wide group-hover:text-white transition">97681 17514</p>
+                            <p class="text-xs text-slate-400 font-semibold uppercase group-hover:text-blue-100">Call Now</p>
+                            <p class="font-bold text-xl tracking-wide text-white">+91 97681 17514</p>
                         </div>
                     </a>
 
-                    <!-- Email -->
-                    <a href="mailto:dprathameshcreations@gmail.com" class="group flex items-center gap-5 bg-white/5 p-4 rounded-xl hover:bg-white/10 transition border border-white/5 hover:border-blue-500/50">
-                        <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition">
+                    <!-- EMAIL BUTTON: Interactive href="mailto:..." -->
+                    <a href="mailto:dprathameshcreations@gmail.com" class="group flex items-center gap-5 bg-white/5 p-4 rounded-xl hover:bg-purple-600 transition border border-white/5 hover:border-purple-400">
+                        <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl">
                             <i class="fa-solid fa-envelope"></i>
                         </div>
                         <div>
-                            <p class="text-xs text-slate-400 font-semibold uppercase">Send Email</p>
-                            <p class="font-bold text-lg tracking-wide group-hover:text-white transition">dprathameshcreations@gmail.com</p>
+                            <p class="text-xs text-slate-400 font-semibold uppercase group-hover:text-purple-100">Send Email</p>
+                            <p class="font-bold text-lg tracking-wide text-white">dprathameshcreations@gmail.com</p>
                         </div>
                     </a>
                 </div>
@@ -326,24 +357,142 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-slate-950 py-12 border-t border-slate-800">
+    <footer class="bg-black py-10 border-t border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-slate-500 gap-6">
-            <div class="flex items-center gap-3">
-                <img src="logo.ico" alt="Logo" class="w-6 h-6 grayscale opacity-50">
+            <div class="flex items-center gap-3 opacity-70 hover:opacity-100 transition">
+                <img src="logo.ico" alt="Logo" class="w-6 h-6 grayscale">
                 <span class="font-bold text-lg text-slate-300">Trackaroo</span>
-                <span class="mx-2 text-slate-700">|</span>
                 <span class="text-sm">© 2026 All Rights Reserved</span>
             </div>
-            <div class="flex items-center gap-2 text-sm">
-                <span>Designed & Built by</span>
-                <span class="text-white font-semibold">Dprathamesh Creations</span>
+            <div class="text-sm">
+                Developed & Maintained by <span class="text-slate-300 font-semibold">Dprathamesh Creations</span>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
     <script>
-        // --- Mobile Menu Toggle ---
+        // --- 1. Enhanced Particle Network Effect ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Settings
+        const particleCount = 60; // Number of dots
+        const connectionDistance = 150; // Max distance to draw line
+        const mouseDistance = 200; // Max distance for mouse connection
+
+        // Mouse State
+        let mouse = { x: null, y: null };
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5; // Velocity X
+                this.vy = (Math.random() - 0.5) * 0.5; // Velocity Y
+                this.size = Math.random() * 2 + 1;
+                this.color = `rgba(59, 130, 246, ${Math.random() * 0.5 + 0.2})`; // Blueish opacity
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+
+                // Draw connections to other particles
+                for (let j = index; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${1 - distance/connectionDistance})`; // Fade out line
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw connection to Mouse
+                if (mouse.x != null) {
+                    const dx = p.x - mouse.x;
+                    const dy = p.y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouseDistance) {
+                        ctx.beginPath();
+                        // Stronger line for mouse
+                        ctx.strokeStyle = `rgba(100, 200, 255, ${1 - distance/mouseDistance})`; 
+                        ctx.lineWidth = 0.8;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', initParticles);
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+            
+            // Also Parallax Background
+            const elements = document.querySelectorAll('.parallax-element');
+            const x = (window.innerWidth - e.pageX) / 100;
+            const y = (window.innerHeight - e.pageY) / 100;
+            elements.forEach(el => {
+                const speed = el.getAttribute('data-speed') || 1;
+                el.style.transform = `translateX(${x * speed}px) translateY(${y * speed}px)`;
+            });
+        });
+        
+        // Remove mouse attraction when leaving window
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        initParticles();
+        animateParticles();
+
+
+        // --- 2. Mobile Menu Toggle ---
         const btnMenu = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
 
@@ -359,13 +508,11 @@
             }
         });
 
-        // --- GitHub API Auto-Link ---
+        // --- 3. GitHub API Auto-Link ---
         const repoOwner = 'dprathameshcreations';
         const repoName = 'Trackaroo-App-Release';
         
-        // Select all elements marked as download links
         const downloadLinks = document.querySelectorAll('.js-download-link');
-        const heroBtnText = document.getElementById('btn-text');
         const heroVersionInfo = document.getElementById('version-info');
 
         fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`)
@@ -374,37 +521,28 @@
                 return response.json();
             })
             .then(data => {
-                // Find the asset that ends with Setup.exe (Velopack standard)
                 const setupAsset = data.assets.find(asset => asset.name.includes('Setup.exe'));
                 
                 if (setupAsset) {
-                    // ✅ Success: Update ALL buttons to download the file directly
                     downloadLinks.forEach(link => {
                         link.href = setupAsset.browser_download_url;
-                        // Optional: remove anchor scroll behavior by removing href="#" hash if present
                     });
 
-                    // Update Hero Section text
                     if(heroVersionInfo) {
-                        heroVersionInfo.innerHTML = `<i class="fa-solid fa-circle-check text-green-500"></i> Latest Version: <span class="text-slate-900 font-bold">${data.tag_name}</span> (Windows x64)`;
+                        heroVersionInfo.innerHTML = `<i class="fa-solid fa-circle-check text-green-500"></i> Latest Version: <span class="text-white font-bold ml-1">${data.tag_name}</span> (Windows x64)`;
                     }
                 } else {
-                    // ⚠️ Warning: Release exists but no .exe found. Redirect to Releases page.
                     const releaseUrl = `https://github.com/${repoOwner}/${repoName}/releases`;
                     downloadLinks.forEach(link => link.href = releaseUrl);
                     
-                    if(heroBtnText) heroBtnText.innerText = "Visit Download Page";
-                    if(heroVersionInfo) heroVersionInfo.innerHTML = `<i class="fa-solid fa-circle-info text-yellow-500"></i> Direct link unavailable. Redirecting to releases.`;
+                    if(heroVersionInfo) heroVersionInfo.innerHTML = `<i class="fa-solid fa-circle-info text-yellow-500"></i> Manual Download`;
                 }
             })
             .catch(error => {
                 console.error('Error fetching release:', error);
-                // ❌ Error: API failed. Fallback to Releases page for all buttons.
                 const releaseUrl = `https://github.com/${repoOwner}/${repoName}/releases`;
                 downloadLinks.forEach(link => link.href = releaseUrl);
-                
-                if(heroBtnText) heroBtnText.innerText = "Download from GitHub";
-                if(heroVersionInfo) heroVersionInfo.innerText = "Server unreachable. Using manual link.";
+                if(heroVersionInfo) heroVersionInfo.innerText = "GitHub API Unreachable";
             });
     </script>
 </body>
