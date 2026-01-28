@@ -23,28 +23,24 @@
                     },
                     animation: {
                         'shine': 'shine 3s infinite',
-                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
-                        'pop-in': 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                        'pop-out': 'popOut 0.3s forwards',
+                        'sticker-idle': 'stickerIdle 2s infinite ease-in-out',
+                        'sticker-error': 'stickerError 0.4s ease-in-out',
                     },
                     keyframes: {
                         shine: {
                             '0%': { transform: 'translateX(-100%) skewX(-15deg)' },
                             '50%, 100%': { transform: 'translateX(200%) skewX(-15deg)' }
                         },
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        // Bouncy "Breathing" animation like WhatsApp stickers
+                        stickerIdle: {
+                            '0%, 100%': { transform: 'scale(1) translateY(0)' },
+                            '50%': { transform: 'scale(1.08) translateY(-3px)' }
                         },
-                        popIn: {
-                            '0%': { opacity: '0', transform: 'scale(0.5) translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
-                        },
-                        popOut: {
-                            '0%': { opacity: '1', transform: 'scale(1)' },
-                            '100%': { opacity: '0', transform: 'scale(0.5)' }
+                        // Fast shake for error
+                        stickerError: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-8px) rotate(-5deg)' },
+                            '75%': { transform: 'translateX(8px) rotate(5deg)' }
                         }
                     }
                 }
@@ -119,53 +115,14 @@
             mix-blend-mode: screen; /* Blends nicely with dark bg */
         }
 
-        /* Pixel Bot CSS */
-        .pixel-bot {
-            width: 80px;
-            height: 80px;
-            position: relative;
-            image-rendering: pixelated;
-        }
-        .pixel-head {
-            width: 60px;
-            height: 50px;
-            background: #FFD700;
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            border-radius: 4px;
-            box-shadow: 4px 4px 0 #000 inset;
-        }
-        .pixel-eye {
-            width: 10px;
-            height: 10px;
-            background: #000;
-            position: absolute;
-            top: 15px;
-        }
-        .eye-left { left: 10px; }
-        .eye-right { right: 10px; }
-        .pixel-mouth {
-            width: 30px;
-            height: 4px;
-            background: #000;
-            position: absolute;
-            bottom: 10px;
-            left: 15px;
-        }
-        /* Error State for Bot */
-        .pixel-bot.error .pixel-head {
-            background: #ef4444; /* Red */
-        }
-        .pixel-bot.error .pixel-mouth {
-            height: 8px;
-            width: 20px;
-            left: 20px;
-            border-radius: 50%;
-        }
-        .pixel-bot.error .pixel-eye {
-            height: 4px;
-            top: 18px; /* Squint */
+        /* WhatsApp Style Sticker Effect */
+        .emoji-sticker {
+            font-size: 4.5rem;
+            display: inline-block;
+            /* Drop shadow creates the "Sticker" pop-out look */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); 
+            transition: transform 0.2s;
+            cursor: default;
         }
     </style>
 </head>
@@ -695,15 +652,10 @@
             </button>
             
             <div class="text-center mb-6">
-                <!-- Bot Container (Initially Hidden) -->
-                <div id="bot-container" class="w-full flex justify-center mb-4 hidden animate-pop-in">
-                    <div class="pixel-bot">
-                        <div class="pixel-head">
-                            <div class="pixel-eye eye-left"></div>
-                            <div class="pixel-eye eye-right"></div>
-                            <div class="pixel-mouth"></div>
-                        </div>
-                    </div>
+                <!-- Animated Sticker Container (Hidden initially) -->
+                <div id="sticker-container" class="w-full flex justify-center mb-4 hidden">
+                    <!-- High-Res Emoji Styled as 3D Sticker -->
+                    <span id="sticker-emoji" class="emoji-sticker">🔐</span>
                 </div>
 
                 <!-- Default Lock Icon (Initially Visible) -->
@@ -926,6 +878,7 @@
         const _rN = 'VHJhY2thcm9vLUFwcC1SZWxlYXNl'; // Base64 Repo
         
         const trackarooVersionInfo = document.getElementById('trackaroo-version');
+        let actualDownloadUrl = ''; 
 
         // Access Key Management
         const ACCESS_KEY = "TRACKAROO-BETA"; 
@@ -933,7 +886,8 @@
         function openAccessModal(e) {
             if(e) e.preventDefault();
             const modal = document.getElementById('access-modal');
-            const bot = document.getElementById('bot-container');
+            const stickerContainer = document.getElementById('sticker-container');
+            const sticker = document.getElementById('sticker-emoji');
             const lock = document.getElementById('lock-icon');
             
             // Reset State
@@ -941,41 +895,43 @@
             document.getElementById('access-key-input').value = '';
             document.getElementById('access-error').classList.add('hidden');
             
-            // Show Lock, Hide Bot initially
-            lock.classList.remove('hidden');
-            bot.classList.add('hidden');
-            bot.querySelector('.pixel-bot').classList.remove('error');
+            // Show Lock Sticker (Idle State)
+            lock.classList.add('hidden'); // Hide font-awesome lock
+            stickerContainer.classList.remove('hidden');
+            sticker.innerText = "🔐"; // Initial Lock
+            sticker.className = "emoji-sticker animate-sticker-idle";
         }
 
         function closeAccessModal() {
             document.getElementById('access-modal').classList.add('hidden');
         }
 
-        // Show Pixel Bot Animation on Error
+        // Show Animated Reaction on Error
         function triggerBotReaction() {
-            const botContainer = document.getElementById('bot-container');
-            const lockIcon = document.getElementById('lock-icon');
-            const bot = botContainer.querySelector('.pixel-bot');
+            const sticker = document.getElementById('sticker-emoji');
 
-            lockIcon.classList.add('hidden');
-            botContainer.classList.remove('hidden');
+            // Change to "Dizzy" or "Facepalm" or "No"
+            sticker.innerText = "😵‍💫"; // Dizzy face
+            sticker.className = "emoji-sticker animate-sticker-error";
             
-            // Trigger Shake
-            bot.classList.add('animate-shake', 'error');
-            
+            // Revert after shake
             setTimeout(() => {
-                bot.classList.remove('animate-shake');
-            }, 500);
+                sticker.innerText = "🔐";
+                sticker.className = "emoji-sticker animate-sticker-idle";
+            }, 600);
         }
 
         // IMPORTANT: The fetch logic is moved INSIDE verifyAccessKey
-        // This prevents the browser from making the network request (and revealing the link)
-        // until the correct password is provided.
         function verifyAccessKey(e) {
             e.preventDefault();
             const input = document.getElementById('access-key-input').value.trim().toUpperCase();
             
             if (input === ACCESS_KEY) {
+                // Success Animation
+                const sticker = document.getElementById('sticker-emoji');
+                sticker.innerText = "🔓"; // Unlock
+                sticker.className = "emoji-sticker animate-pulse";
+
                 // Show loading state on button
                 const btn = e.target.querySelector('button');
                 const originalText = btn.innerText;
@@ -994,7 +950,7 @@
                         const setupAsset = data.assets.find(asset => asset.name.includes('Setup.exe'));
                         if (setupAsset) {
                             window.location.href = setupAsset.browser_download_url;
-                            closeAccessModal();
+                            setTimeout(closeAccessModal, 1000); // Wait for animation
                         } else {
                             throw new Error("Asset missing");
                         }
@@ -1007,14 +963,13 @@
                     });
 
             } else {
-                triggerBotReaction(); // Show animated bot
+                triggerBotReaction(); // Show animated error sticker
                 document.getElementById('access-error').innerText = "Invalid Access Key. Please try again.";
                 document.getElementById('access-error').classList.remove('hidden');
             }
         }
 
         // Auto-Version Check on Load (Optional - leaks repo name if someone looks closely)
-        // Kept lightweight just for the badge
         const tagsUrl = `https://api.github.com/repos/${atob(_rO)}/${atob(_rN)}/tags`;
         fetch(tagsUrl)
             .then(res => res.json())
