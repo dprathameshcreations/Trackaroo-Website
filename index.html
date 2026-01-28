@@ -347,7 +347,8 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#" class="js-download-link flex items-center justify-center gap-3 bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-yellow-400 transition shadow-lg">
+                        <!-- Updated Download Button with Access Check -->
+                        <a href="#" onclick="openAccessModal(event)" class="flex items-center justify-center gap-3 bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-yellow-400 transition shadow-lg">
                             <i class="fa-brands fa-windows"></i> Download for Windows
                         </a>
                         <p id="trackaroo-version" class="flex items-center text-sm text-slate-500">
@@ -619,6 +620,37 @@
         </div>
     </footer>
 
+    <!-- Access Modal -->
+    <div id="access-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div class="bg-zinc-900 border border-yellow-400/30 rounded-2xl p-8 max-w-md w-full shadow-2xl relative animate-float">
+            <!-- Close Button -->
+            <button onclick="closeAccessModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-yellow-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-400/30">
+                    <i class="fa-solid fa-lock text-3xl text-yellow-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2">Early Access Only</h3>
+                <p class="text-slate-400 text-sm">This software is currently in invite-only beta. Please enter your access key to download.</p>
+            </div>
+
+            <form onsubmit="verifyAccessKey(event)" class="space-y-4">
+                <div>
+                    <input type="text" id="access-key-input" placeholder="Enter Access Key" 
+                           class="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition text-center tracking-widest uppercase">
+                </div>
+                <button type="submit" class="w-full bg-yellow-400 hover:bg-white text-black font-bold py-3 rounded-lg transition transform active:scale-95">
+                    Unlock Download
+                </button>
+            </form>
+            <p id="access-error" class="text-red-500 text-xs text-center mt-4 hidden">
+                <i class="fa-solid fa-circle-exclamation mr-1"></i> Invalid Access Key
+            </p>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // --- 1. Gallery Logic (Modified for PixelRoot) ---
@@ -731,7 +763,7 @@
                     if (distance < connectionDistance) {
                         ctx.beginPath();
                         // Yellow Lines
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - distance/connectionDistance)})`; 
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - connectionDistance)})`; 
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
@@ -746,19 +778,11 @@
 
                     if (distance < mouseDistance) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.4 * (1 - distance/mouseDistance)})`; 
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.2 * (1 - distance/mouseDistance)})`; 
                         ctx.lineWidth = 0.8;
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(mouse.x, mouse.y);
                         ctx.stroke();
-
-                        // Gentle push away from mouse
-                        if (distance < 100) {
-                            const angle = Math.atan2(dy, dx);
-                            const force = (100 - distance) / 100; 
-                            p.vx -= Math.cos(angle) * force * 0.5;
-                            p.vy -= Math.sin(angle) * force * 0.5;
-                        }
                     }
                 }
             });
@@ -804,14 +828,55 @@
             });
         }
 
-        // --- 3. Trackaroo Download & Version Logic ---
-        const repoOwner = 'dprathameshcreations';
-        const repoName = 'Trackaroo-App-Release';
-        
-        const downloadLinks = document.querySelectorAll('.js-download-link');
-        const trackarooVersionInfo = document.getElementById('trackaroo-version');
+        // --- 3. Trackaroo Download & Access Key Logic ---
+        // Obfuscated GitHub Link
+        const _0x5f1a=['dHJhY2thcm9v','Z3Jvd3M=','cmVsZWFzZXM=','YnJvd3Nlcl9kb3dubG9hZF91cmw=','dGFnX25hbWU=','ZG93bmxvYWQ=','Z3JlZW4=','eWVsbG93','Z3JleQ==','aW5jbHVkZXM=','U2V0dXAuZXhl','anNvbg==','dGhlbg==','b2s=','ZXJyb3I=','bG9n','R2l0SHViIE9mZmxpbmU=','aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy8=','Lw==','L3JlbGVhc2VzL2xhdGVzdA==','ZGVzaWdu','ZGVzaWduZXI=','bWFrZQ==','YnVpbGQ=','ZGVwbG95'];
+        const _0x2c4e = function(index) {
+            return atob(_0x5f1a[index]); 
+        };
 
-        fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`)
+        const _rO = 'ZHByYXRoYW1lc2hjcmVhdGlvbnM='; // Base64 Owner
+        const _rN = 'VHJhY2thcm9vLUFwcC1SZWxlYXNl'; // Base64 Repo
+        
+        const trackarooVersionInfo = document.getElementById('trackaroo-version');
+        let actualDownloadUrl = ''; 
+
+        // Access Key Management
+        const ACCESS_KEY = "TRACKAROO-BETA"; 
+        
+        function openAccessModal(e) {
+            if(e) e.preventDefault();
+            document.getElementById('access-modal').classList.remove('hidden');
+            document.getElementById('access-key-input').value = '';
+            document.getElementById('access-error').classList.add('hidden');
+        }
+
+        function closeAccessModal() {
+            document.getElementById('access-modal').classList.add('hidden');
+        }
+
+        function verifyAccessKey(e) {
+            e.preventDefault();
+            const input = document.getElementById('access-key-input').value.trim().toUpperCase();
+            
+            if (input === ACCESS_KEY) {
+                if (actualDownloadUrl) {
+                    window.location.href = actualDownloadUrl;
+                    closeAccessModal();
+                } else {
+                    document.getElementById('access-error').innerText = "Download link not ready yet. Please try again.";
+                    document.getElementById('access-error').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('access-error').innerText = "Invalid Access Key. Please try again.";
+                document.getElementById('access-error').classList.remove('hidden');
+            }
+        }
+
+        // Decode repo details at runtime to fetch data
+        const apiUrl = `https://api.github.com/repos/${atob(_rO)}/${atob(_rN)}/releases/latest`;
+
+        fetch(apiUrl)
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
@@ -820,24 +885,23 @@
                 const setupAsset = data.assets.find(asset => asset.name.includes('Setup.exe'));
                 
                 if (setupAsset) {
-                    downloadLinks.forEach(link => {
-                        link.href = setupAsset.browser_download_url;
-                    });
+                    actualDownloadUrl = setupAsset.browser_download_url;
 
                     if(trackarooVersionInfo) {
                         trackarooVersionInfo.innerHTML = `<i class="fa-solid fa-circle-check text-green-500 mr-2"></i> Version ${data.tag_name}`;
                     }
                 } else {
-                    const releaseUrl = `https://github.com/${repoOwner}/${repoName}/releases`;
-                    downloadLinks.forEach(link => link.href = releaseUrl);
+                    // Reconstruct release URL for fallback (without exposing literal string in fetch)
+                    const releaseUrl = `https://github.com/${atob(_rO)}/${atob(_rN)}/releases`;
+                    actualDownloadUrl = releaseUrl; 
                     
                     if(trackarooVersionInfo) trackarooVersionInfo.innerHTML = `<i class="fa-solid fa-circle-info text-yellow-500 mr-2"></i> Manual DL`;
                 }
             })
             .catch(error => {
                 console.error('Error fetching release:', error);
-                const releaseUrl = `https://github.com/${repoOwner}/${repoName}/releases`;
-                downloadLinks.forEach(link => link.href = releaseUrl);
+                const releaseUrl = `https://github.com/${atob(_rO)}/${atob(_rN)}/releases`;
+                actualDownloadUrl = releaseUrl;
                 
                 if(trackarooVersionInfo) trackarooVersionInfo.innerText = "GitHub Offline";
             });
