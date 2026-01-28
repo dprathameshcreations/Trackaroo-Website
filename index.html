@@ -6,8 +6,10 @@
     <title>PixelRoot Studio | Design That Grows</title>
     <meta name="description" content="PixelRoot Studio is a creative design studio building strong visual identities and software solutions for startups.">
     
+    <!-- Favicon -->
     <link rel="shortcut icon" href="Logo.png" type="image/png">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -33,8 +35,10 @@
         }
     </script>
     
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -88,13 +92,18 @@
 </head>
 <body class="bg-black text-slate-300 overflow-x-hidden">
 
+    <!-- Navigation -->
     <nav class="bg-black/90 backdrop-blur-lg fixed w-full z-50 border-b border-white/10 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 
+                <!-- Logo Area -->
                 <div class="flex items-center gap-3 group cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <!-- Enhanced Logo Container -->
                     <div class="relative w-12 h-12 flex items-center justify-center">
+                        <!-- Glow Effect behind -->
                         <div class="absolute inset-0 bg-yellow-500 blur-md opacity-20 group-hover:opacity-60 transition duration-500 rounded-xl"></div>
+                        <!-- Logo Box (Added group-hover:rotate-12 here) -->
                         <div class="relative bg-white p-1.5 rounded-xl shadow-2xl shadow-yellow-500/10 border border-white/10 group-hover:scale-105 group-hover:rotate-12 transition transform duration-300 w-full h-full flex items-center justify-center">
                             <img src="Logo.png" alt="PixelRoot Studio Logo" class="w-full h-full object-contain">
                         </div>
@@ -105,6 +114,7 @@
                     </div>
                 </div>
                 
+                <!-- Desktop Menu -->
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="#services" class="text-sm font-medium text-slate-400 hover:text-yellow-400 transition">Services</a>
                     <a href="#products" class="text-sm font-medium text-slate-400 hover:text-yellow-400 transition">Software</a>
@@ -115,6 +125,7 @@
                     </a>
                 </div>
 
+                <!-- Mobile Menu Button -->
                 <div class="md:hidden">
                     <button id="mobile-menu-btn" class="text-slate-300 hover:text-white focus:outline-none p-2">
                         <i class="fa-solid fa-bars text-2xl"></i>
@@ -123,6 +134,7 @@
             </div>
         </div>
 
+        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-t border-white/10 absolute w-full left-0 shadow-2xl">
             <div class="px-4 pt-4 pb-6 space-y-2">
                 <a href="#services" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">Services</a>
@@ -133,10 +145,13 @@
         </div>
     </nav>
 
+    <!-- Hero Section -->
     <section class="pt-36 pb-24 hero-pattern relative min-h-screen flex items-center overflow-hidden">
         
+        <!-- 🕸️ Tech Particle Network Canvas -->
         <canvas id="particle-canvas"></canvas>
 
+        <!-- Background Glows (Parallax) -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="parallax-element absolute top-20 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-[120px] animate-blob" data-speed="2"></div>
             <div class="parallax-element absolute bottom-20 right-1/4 w-96 h-96 bg-zinc-800/20 rounded-full blur-[120px] animate-blob" style="animation-delay: 2s" data-speed="-2"></div>
@@ -144,7 +159,9 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-16 relative z-10">
             
+            <!-- Text Content -->
             <div class="md:w-1/2 text-center md:text-left">
+                <!-- Badge -->
                 <div class="inline-flex items-center gap-2 bg-zinc-900 border border-white/10 text-yellow-400 px-4 py-1.5 rounded-full text-xs font-bold mb-8 shadow-inner backdrop-blur-sm">
                     <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
                     Accepting New Projects
@@ -171,13 +188,18 @@
                 </div>
             </div>
 
+            <!-- 3D Visual (Agency Mockup) -->
             <div class="md:w-1/2 relative perspective-1000 parallax-container">
+                <!-- 3D Card -->
                 <div class="parallax-element relative bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl shadow-yellow-900/10 p-2 animate-float transform rotate-y-6 rotate-x-6 hover:rotate-0 transition duration-700 ease-out" data-speed="1.5">
                     
+                    <!-- Glass Reflection -->
                     <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl pointer-events-none z-20"></div>
 
+                    <!-- App Window Frame -->
                     <div class="bg-black rounded-2xl overflow-hidden aspect-video flex flex-col relative group border border-white/5">
                         
+                        <!-- Top Bar -->
                         <div class="h-10 bg-zinc-900 border-b border-white/5 flex items-center px-4 gap-2">
                             <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
                             <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
@@ -185,10 +207,13 @@
                             <div class="ml-4 bg-black px-3 py-1 rounded text-xs text-yellow-500/50 font-mono tracking-widest">PIXELROOT_STUDIO_DESIGN_SYSTEM</div>
                         </div>
 
+                        <!-- Content Mockup -->
                         <div class="flex-1 p-6 relative">
+                            <!-- Background Glow -->
                             <div class="absolute top-10 right-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
 
                             <div class="grid grid-cols-2 gap-4 mb-6">
+                                <!-- Card 1 -->
                                 <div class="bg-zinc-900/80 p-4 rounded-xl border border-white/5 hover:border-yellow-500/30 transition">
                                     <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center text-yellow-400 mb-3">
                                         <i class="fa-solid fa-pen-nib"></i>
@@ -199,6 +224,7 @@
                                         <div class="h-full w-3/4 bg-yellow-400"></div>
                                     </div>
                                 </div>
+                                <!-- Card 2 -->
                                 <div class="bg-zinc-900/80 p-4 rounded-xl border border-white/5 hover:border-yellow-500/30 transition">
                                     <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white mb-3">
                                         <i class="fa-solid fa-image"></i>
@@ -208,7 +234,9 @@
                                 </div>
                             </div>
 
+                            <!-- Design Elements -->
                             <div class="flex gap-4 items-center">
+                                <!-- Enhanced Logo Visual in 3D Card -->
                                 <div class="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,215,0,0.3)] p-3 relative group overflow-hidden">
                                     <div class="absolute inset-0 bg-white/20 -skew-x-12 -translate-x-full animate-shine pointer-events-none"></div>
                                     <img src="Logo.png" alt="PixelRoot Logo" class="w-full h-full object-contain drop-shadow-xl transform group-hover:scale-110 transition duration-500">
@@ -226,6 +254,7 @@
         </div>
     </section>
 
+    <!-- Services Section -->
     <section id="services" class="py-24 bg-zinc-950 relative border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-20">
@@ -234,6 +263,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Service 1 -->
                 <div class="group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300">
                     <div class="w-12 h-12 bg-white/5 text-yellow-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-yellow-400 group-hover:text-black transition">
                         <i class="fa-solid fa-pen-fancy"></i>
@@ -242,6 +272,7 @@
                     <p class="text-sm text-slate-400 leading-relaxed">Unique, memorable logos that act as the face of your brand. Simplicity and scalability.</p>
                 </div>
 
+                <!-- Service 2 -->
                 <div class="group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300">
                     <div class="w-12 h-12 bg-white/5 text-yellow-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-yellow-400 group-hover:text-black transition">
                         <i class="fa-solid fa-layer-group"></i>
@@ -250,6 +281,7 @@
                     <p class="text-sm text-slate-400 leading-relaxed">Complete visual systems including color palettes, typography, and visual guidelines.</p>
                 </div>
 
+                <!-- Service 3 -->
                 <div class="group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300">
                     <div class="w-12 h-12 bg-white/5 text-yellow-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-yellow-400 group-hover:text-black transition">
                         <i class="fa-solid fa-hashtag"></i>
@@ -258,6 +290,7 @@
                     <p class="text-sm text-slate-400 leading-relaxed">Engaging posts, banners, and ad designs optimized for Instagram, LinkedIn, and Facebook.</p>
                 </div>
 
+                <!-- Service 4 (NEW) -->
                 <div class="group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300">
                     <div class="w-12 h-12 bg-white/5 text-yellow-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-yellow-400 group-hover:text-black transition">
                         <i class="fa-solid fa-code"></i>
@@ -269,10 +302,12 @@
         </div>
     </section>
 
+    <!-- NEW FEATURED PRODUCT: TRACKAROO -->
     <section id="products" class="py-24 bg-black border-t border-white/5 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
                 
+                <!-- Product Info -->
                 <div class="order-2 md:order-1">
                     <div class="inline-flex items-center gap-2 bg-yellow-400/10 text-yellow-400 px-3 py-1 rounded-full text-xs font-bold mb-4 border border-yellow-400/20">
                         <i class="fa-solid fa-rocket"></i> Flagship Product
@@ -305,11 +340,15 @@
                     </div>
                 </div>
 
+                <!-- Product Visual (Trackaroo Mockup - Reskinned) -->
                 <div class="order-1 md:order-2">
                     <div class="bg-zinc-900 p-6 rounded-3xl shadow-2xl border border-white/10 relative group hover:border-yellow-500/30 transition duration-500">
+                        <!-- Glow -->
                         <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-[80px] pointer-events-none"></div>
 
+                        <!-- App Window -->
                         <div class="space-y-4 relative z-10">
+                            <!-- Mockup Header -->
                             <div class="flex items-center justify-between border-b border-white/5 pb-4">
                                 <div class="flex gap-2">
                                     <div class="w-3 h-3 rounded-full bg-zinc-700"></div>
@@ -318,6 +357,7 @@
                                 <div class="text-xs text-slate-500 font-mono">Trackaroo v1.0.1</div>
                             </div>
 
+                            <!-- List Item 1 -->
                             <div class="flex items-center gap-4 bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center text-indigo-400 font-bold">
                                     <i class="fa-solid fa-briefcase"></i>
@@ -332,6 +372,7 @@
                                 </div>
                             </div>
                             
+                            <!-- List Item 2 -->
                             <div class="flex items-center gap-4 bg-black/40 p-3 rounded-xl border border-white/5 border-l-4 border-l-red-500">
                                 <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 font-bold">
                                     <i class="fa-solid fa-wifi"></i>
@@ -346,6 +387,7 @@
                                 </div>
                             </div>
 
+                             <!-- List Item 3 -->
                              <div class="flex items-center gap-4 bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400 font-bold">
                                     <i class="fa-brands fa-figma"></i>
@@ -366,6 +408,7 @@
         </div>
     </section>
 
+    <!-- Gallery Section (Updated) -->
     <section id="gallery" class="py-24 bg-zinc-950 relative border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-12">
@@ -373,6 +416,7 @@
                 <p class="text-lg text-slate-400 max-w-2xl mx-auto">From branding visual identities to functional software products.</p>
             </div>
 
+            <!-- Tab Buttons -->
             <div class="flex flex-wrap justify-center gap-4 mb-10">
                 <button onclick="switchTab('logo')" id="tab-logo" class="gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-yellow-500 bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 cursor-default">
                     Logos
@@ -388,9 +432,12 @@
                 </button>
             </div>
 
+            <!-- Image Container -->
             <div class="relative w-full max-w-5xl mx-auto aspect-video bg-black rounded-2xl border border-white/10 shadow-2xl overflow-hidden group">
+                <!-- Images Area -->
                 <div class="relative h-full w-full rounded-2xl overflow-hidden flex items-center justify-center">
                     
+                    <!-- PLACEHOLDERS: User should replace these images -->
                     <div id="img-logo" class="gallery-img absolute inset-0 w-full h-full flex flex-col items-center justify-center transition-opacity duration-500 opacity-100 bg-black">
                         <i class="fa-solid fa-shapes text-6xl text-yellow-500 mb-4"></i>
                         <p class="text-xl font-bold">Logo Portfolio Placeholder</p>
@@ -406,11 +453,14 @@
                         <p class="text-xl font-bold">Social Media Portfolio Placeholder</p>
                     </div>
 
+                    <!-- NEW: Software Tab Content (Shows Trackaroo Preview) -->
                     <div id="img-software" class="gallery-img absolute inset-0 w-full h-full flex flex-col items-center justify-center transition-opacity duration-500 opacity-0 bg-black p-8">
                         <div class="relative w-full h-full flex items-center justify-center">
+                            <!-- Large Featured Screenshot with Controls -->
                             <div class="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-zinc-900">
                                 <img id="software-main-img" src="app-dashboard.png" alt="Trackaroo Dashboard" class="w-full h-full object-contain p-2 transition-all duration-500">
                                 
+                                <!-- Navigation Arrows -->
                                 <button onclick="changeSlide(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-yellow-500 text-white hover:text-black w-10 h-10 rounded-full flex items-center justify-center transition backdrop-blur-sm border border-white/10">
                                     <i class="fa-solid fa-chevron-left"></i>
                                 </button>
@@ -418,6 +468,7 @@
                                     <i class="fa-solid fa-chevron-right"></i>
                                 </button>
 
+                                <!-- Caption -->
                                 <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
                                     <span id="software-caption" class="text-sm font-bold text-white">Dashboard Overview</span>
                                 </div>
@@ -429,10 +480,12 @@
         </div>
     </section>
 
+    <!-- Brand Philosophy -->
     <section id="philosophy" class="py-24 bg-zinc-950 border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
                 
+                <!-- Text -->
                 <div class="order-2 md:order-1">
                     <h2 class="text-3xl font-bold mb-6 text-white">Our Philosophy <span class="text-yellow-500">.</span></h2>
                     <p class="text-lg text-slate-400 mb-8">We believe design is more than good looks. It's about clarity, strategy, and building a foundation that helps a business grow.</p>
@@ -462,6 +515,7 @@
                     </div>
                 </div>
 
+                <!-- Live Card Example (Philosophy Visual) -->
                 <div class="order-1 md:order-2 parallax-element" data-speed="1">
                     <div class="bg-black p-8 rounded-3xl shadow-2xl border border-white/10 relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-[80px] pointer-events-none"></div>
@@ -482,6 +536,7 @@
         </div>
     </section>
 
+    <!-- Developer Contact Section -->
     <section id="contact" class="py-24 bg-black relative overflow-hidden border-t border-white/5">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-12">
@@ -491,6 +546,7 @@
             
             <div class="bg-zinc-900/50 backdrop-blur-md rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10 hover:border-yellow-500/30 transition duration-500">
                 
+                <!-- Identity -->
                 <div class="text-center md:text-left">
                     <div class="mb-4 inline-block p-3 bg-yellow-400/10 rounded-2xl border border-yellow-500/20">
                         <i class="fa-solid fa-envelope-open-text text-3xl text-yellow-400"></i>
@@ -502,7 +558,9 @@
 
                 <div class="hidden md:block w-px h-32 bg-white/10"></div>
 
+                <!-- Interactive Contact Details -->
                 <div class="flex flex-col gap-6 w-full md:w-auto">
+                    <!-- CALL BUTTON -->
                     <a href="tel:+919768117514" class="group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-yellow-500 transition border border-white/10 hover:border-yellow-400">
                         <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl group-hover:text-black">
                             <i class="fa-solid fa-phone"></i>
@@ -513,6 +571,7 @@
                         </div>
                     </a>
 
+                    <!-- EMAIL BUTTON -->
                     <a href="mailto:dprathameshcreations@gmail.com" class="group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-white transition border border-white/10 hover:border-white">
                         <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl group-hover:text-black group-hover:bg-black/10">
                             <i class="fa-solid fa-envelope"></i>
@@ -527,9 +586,11 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="bg-black py-10 border-t border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-slate-500 gap-6">
             <div class="flex items-center gap-3 opacity-70 hover:opacity-100 transition">
+                <!-- Footer Logo -->
                 <div class="bg-white p-1 rounded-lg w-8 h-8 flex items-center justify-center">
                     <img src="Logo.png" alt="PixelRoot Studio Logo" class="w-6 h-6 object-contain">
                 </div>
@@ -542,6 +603,7 @@
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script>
         // --- 1. Gallery Logic (Modified for PixelRoot) ---
         function switchTab(tabName) {
@@ -644,6 +706,7 @@
                 p.update();
                 p.draw();
 
+                // Draw connections to other particles
                 for (let j = index; j < particles.length; j++) {
                     const p2 = particles[j];
                     const dx = p.x - p2.x;
@@ -653,7 +716,7 @@
                     if (distance < connectionDistance) {
                         ctx.beginPath();
                         // Yellow Lines
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - connectionDistance)})`; 
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - distance/connectionDistance)})`; 
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
@@ -661,6 +724,7 @@
                     }
                 }
 
+                // Draw connection to Mouse
                 if (mouse.x != null) {
                     const dx = p.x - mouse.x;
                     const dy = p.y - mouse.y;
@@ -668,11 +732,20 @@
 
                     if (distance < mouseDistance) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.2 * (1 - distance/mouseDistance)})`; 
+                        // Stronger Yellow Line to Mouse
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.4 * (1 - distance/mouseDistance)})`; 
                         ctx.lineWidth = 0.8;
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(mouse.x, mouse.y);
                         ctx.stroke();
+
+                        // Gentle push away from mouse
+                        if (distance < 100) {
+                            const angle = Math.atan2(dy, dx);
+                            const force = (100 - distance) / 100; 
+                            p.vx -= Math.cos(angle) * force * 0.5;
+                            p.vy -= Math.sin(angle) * force * 0.5;
+                        }
                     }
                 }
             });
@@ -750,4 +823,4 @@
             });
     </script>
 </body>
-</html></selection-tag>```eof
+</html>
