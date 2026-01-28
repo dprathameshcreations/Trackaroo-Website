@@ -88,9 +88,25 @@
 
         /* Text Selection */
         ::selection { background-color: #FFD700; color: #000; }
+
+        /* Mouse Light Effect */
+        #cursor-light {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999; /* Ensure it's on top but allows clicks through */
+            background: radial-gradient(600px at var(--x) var(--y), rgba(255, 215, 0, 0.15), transparent 80%);
+            mix-blend-mode: screen; /* Blends nicely with dark bg */
+        }
     </style>
 </head>
 <body class="bg-black text-slate-300 overflow-x-hidden">
+
+    <!-- Global Mouse Light Overlay -->
+    <div id="cursor-light"></div>
 
     <!-- Navigation -->
     <nav class="bg-black/90 backdrop-blur-lg fixed w-full z-50 border-b border-white/10 transition-all duration-300">
@@ -706,7 +722,6 @@
                 p.update();
                 p.draw();
 
-                // Draw connections to other particles
                 for (let j = index; j < particles.length; j++) {
                     const p2 = particles[j];
                     const dx = p.x - p2.x;
@@ -724,7 +739,6 @@
                     }
                 }
 
-                // Draw connection to Mouse
                 if (mouse.x != null) {
                     const dx = p.x - mouse.x;
                     const dy = p.y - mouse.y;
@@ -732,7 +746,6 @@
 
                     if (distance < mouseDistance) {
                         ctx.beginPath();
-                        // Stronger Yellow Line to Mouse
                         ctx.strokeStyle = `rgba(255, 215, 0, ${0.4 * (1 - distance/mouseDistance)})`; 
                         ctx.lineWidth = 0.8;
                         ctx.moveTo(p.x, p.y);
@@ -764,6 +777,13 @@
                 const speed = el.getAttribute('data-speed') || 1;
                 el.style.transform = `translateX(${x * speed}px) translateY(${y * speed}px)`;
             });
+
+            // Update CSS Variables for global light effect
+            const light = document.getElementById('cursor-light');
+            if(light) {
+                light.style.setProperty('--x', e.clientX + 'px');
+                light.style.setProperty('--y', e.clientY + 'px');
+            }
         });
         
         window.addEventListener('mouseout', () => {
