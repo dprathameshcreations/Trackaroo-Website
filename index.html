@@ -23,11 +23,28 @@
                     },
                     animation: {
                         'shine': 'shine 3s infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop-in': 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'pop-out': 'popOut 0.3s forwards',
                     },
                     keyframes: {
                         shine: {
                             '0%': { transform: 'translateX(-100%) skewX(-15deg)' },
                             '50%, 100%': { transform: 'translateX(200%) skewX(-15deg)' }
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.5) translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+                        },
+                        popOut: {
+                            '0%': { opacity: '1', transform: 'scale(1)' },
+                            '100%': { opacity: '0', transform: 'scale(0.5)' }
                         }
                     }
                 }
@@ -100,6 +117,55 @@
             z-index: 9999; /* Ensure it's on top but allows clicks through */
             background: radial-gradient(600px at var(--x) var(--y), rgba(255, 215, 0, 0.15), transparent 80%);
             mix-blend-mode: screen; /* Blends nicely with dark bg */
+        }
+
+        /* Pixel Bot CSS */
+        .pixel-bot {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            image-rendering: pixelated;
+        }
+        .pixel-head {
+            width: 60px;
+            height: 50px;
+            background: #FFD700;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border-radius: 4px;
+            box-shadow: 4px 4px 0 #000 inset;
+        }
+        .pixel-eye {
+            width: 10px;
+            height: 10px;
+            background: #000;
+            position: absolute;
+            top: 15px;
+        }
+        .eye-left { left: 10px; }
+        .eye-right { right: 10px; }
+        .pixel-mouth {
+            width: 30px;
+            height: 4px;
+            background: #000;
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+        }
+        /* Error State for Bot */
+        .pixel-bot.error .pixel-head {
+            background: #ef4444; /* Red */
+        }
+        .pixel-bot.error .pixel-mouth {
+            height: 8px;
+            width: 20px;
+            left: 20px;
+            border-radius: 50%;
+        }
+        .pixel-bot.error .pixel-eye {
+            height: 4px;
+            top: 18px; /* Squint */
         }
     </style>
 </head>
@@ -629,9 +695,22 @@
             </button>
             
             <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-yellow-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-400/30">
+                <!-- Bot Container (Initially Hidden) -->
+                <div id="bot-container" class="w-full flex justify-center mb-4 hidden animate-pop-in">
+                    <div class="pixel-bot">
+                        <div class="pixel-head">
+                            <div class="pixel-eye eye-left"></div>
+                            <div class="pixel-eye eye-right"></div>
+                            <div class="pixel-mouth"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Default Lock Icon (Initially Visible) -->
+                <div id="lock-icon" class="w-16 h-16 bg-yellow-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-400/30">
                     <i class="fa-solid fa-lock text-3xl text-yellow-400"></i>
                 </div>
+                
                 <h3 class="text-2xl font-bold text-white mb-2">Early Access Only</h3>
                 <p class="text-slate-400 text-sm">This software is currently in invite-only beta. Please enter your access key to download.</p>
             </div>
@@ -763,7 +842,7 @@
                     if (distance < connectionDistance) {
                         ctx.beginPath();
                         // Yellow Lines
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - distance/connectionDistance)})`; 
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - connectionDistance)})`; 
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
@@ -853,13 +932,40 @@
         
         function openAccessModal(e) {
             if(e) e.preventDefault();
-            document.getElementById('access-modal').classList.remove('hidden');
+            const modal = document.getElementById('access-modal');
+            const bot = document.getElementById('bot-container');
+            const lock = document.getElementById('lock-icon');
+            
+            // Reset State
+            modal.classList.remove('hidden');
             document.getElementById('access-key-input').value = '';
             document.getElementById('access-error').classList.add('hidden');
+            
+            // Show Lock, Hide Bot initially
+            lock.classList.remove('hidden');
+            bot.classList.add('hidden');
+            bot.querySelector('.pixel-bot').classList.remove('error');
         }
 
         function closeAccessModal() {
             document.getElementById('access-modal').classList.add('hidden');
+        }
+
+        // Show Pixel Bot Animation on Error
+        function triggerBotReaction() {
+            const botContainer = document.getElementById('bot-container');
+            const lockIcon = document.getElementById('lock-icon');
+            const bot = botContainer.querySelector('.pixel-bot');
+
+            lockIcon.classList.add('hidden');
+            botContainer.classList.remove('hidden');
+            
+            // Trigger Shake
+            bot.classList.add('animate-shake', 'error');
+            
+            setTimeout(() => {
+                bot.classList.remove('animate-shake');
+            }, 500);
         }
 
         // IMPORTANT: The fetch logic is moved INSIDE verifyAccessKey
@@ -901,6 +1007,7 @@
                     });
 
             } else {
+                triggerBotReaction(); // Show animated bot
                 document.getElementById('access-error').innerText = "Invalid Access Key. Please try again.";
                 document.getElementById('access-error').classList.remove('hidden');
             }
