@@ -763,7 +763,7 @@
                     if (distance < connectionDistance) {
                         ctx.beginPath();
                         // Yellow Lines
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - connectionDistance)})`; 
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - distance/connectionDistance)})`; 
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
@@ -778,11 +778,19 @@
 
                     if (distance < mouseDistance) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.2 * (1 - distance/mouseDistance)})`; 
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.4 * (1 - distance/mouseDistance)})`; 
                         ctx.lineWidth = 0.8;
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(mouse.x, mouse.y);
                         ctx.stroke();
+
+                        // Gentle push away from mouse
+                        if (distance < 100) {
+                            const angle = Math.atan2(dy, dx);
+                            const force = (100 - distance) / 100; 
+                            p.vx -= Math.cos(angle) * force * 0.5;
+                            p.vy -= Math.sin(angle) * force * 0.5;
+                        }
                     }
                 }
             });
@@ -839,7 +847,6 @@
         const _rN = 'VHJhY2thcm9vLUFwcC1SZWxlYXNl'; // Base64 Repo
         
         const trackarooVersionInfo = document.getElementById('trackaroo-version');
-        let actualDownloadUrl = ''; 
 
         // Access Key Management
         const ACCESS_KEY = "TRACKAROO-BETA"; 
@@ -855,56 +862,66 @@
             document.getElementById('access-modal').classList.add('hidden');
         }
 
+        // IMPORTANT: The fetch logic is moved INSIDE verifyAccessKey
+        // This prevents the browser from making the network request (and revealing the link)
+        // until the correct password is provided.
         function verifyAccessKey(e) {
             e.preventDefault();
             const input = document.getElementById('access-key-input').value.trim().toUpperCase();
             
             if (input === ACCESS_KEY) {
-                if (actualDownloadUrl) {
-                    window.location.href = actualDownloadUrl;
-                    closeAccessModal();
-                } else {
-                    document.getElementById('access-error').innerText = "Download link not ready yet. Please try again.";
-                    document.getElementById('access-error').classList.remove('hidden');
-                }
+                // Show loading state on button
+                const btn = e.target.querySelector('button');
+                const originalText = btn.innerText;
+                btn.innerText = "Fetching Secure Link...";
+                btn.disabled = true;
+
+                // Decode and Fetch ONLY now
+                const apiUrl = `https://api.github.com/repos/${atob(_rO)}/${atob(_rN)}/releases/latest`;
+
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Auth Failed');
+                        return response.json();
+                    })
+                    .then(data => {
+                        const setupAsset = data.assets.find(asset => asset.name.includes('Setup.exe'));
+                        if (setupAsset) {
+                            window.location.href = setupAsset.browser_download_url;
+                            closeAccessModal();
+                        } else {
+                            throw new Error("Asset missing");
+                        }
+                    })
+                    .catch(err => {
+                        document.getElementById('access-error').innerText = "Download Error. Please try again.";
+                        document.getElementById('access-error').classList.remove('hidden');
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    });
+
             } else {
                 document.getElementById('access-error').innerText = "Invalid Access Key. Please try again.";
                 document.getElementById('access-error').classList.remove('hidden');
             }
         }
 
-        // Decode repo details at runtime to fetch data
-        const apiUrl = `https://api.github.com/repos/${atob(_rO)}/${atob(_rN)}/releases/latest`;
-
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
+        // Auto-Version Check on Load (Optional - leaks repo name if someone looks closely)
+        // Kept lightweight just for the badge
+        const tagsUrl = `https://api.github.com/repos/${atob(_rO)}/${atob(_rN)}/tags`;
+        fetch(tagsUrl)
+            .then(res => res.json())
             .then(data => {
-                const setupAsset = data.assets.find(asset => asset.name.includes('Setup.exe'));
-                
-                if (setupAsset) {
-                    actualDownloadUrl = setupAsset.browser_download_url;
-
+                if(data && data.length > 0) {
                     if(trackarooVersionInfo) {
-                        trackarooVersionInfo.innerHTML = `<i class="fa-solid fa-circle-check text-green-500 mr-2"></i> Version ${data.tag_name}`;
+                        trackarooVersionInfo.innerHTML = `<i class="fa-solid fa-circle-check text-green-500 mr-2"></i> Version ${data[0].name}`;
                     }
-                } else {
-                    // Reconstruct release URL for fallback (without exposing literal string in fetch)
-                    const releaseUrl = `https://github.com/${atob(_rO)}/${atob(_rN)}/releases`;
-                    actualDownloadUrl = releaseUrl; 
-                    
-                    if(trackarooVersionInfo) trackarooVersionInfo.innerHTML = `<i class="fa-solid fa-circle-info text-yellow-500 mr-2"></i> Manual DL`;
                 }
             })
-            .catch(error => {
-                console.error('Error fetching release:', error);
-                const releaseUrl = `https://github.com/${atob(_rO)}/${atob(_rN)}/releases`;
-                actualDownloadUrl = releaseUrl;
-                
-                if(trackarooVersionInfo) trackarooVersionInfo.innerText = "GitHub Offline";
+            .catch(e => {
+                if(trackarooVersionInfo) trackarooVersionInfo.innerText = "Version Check: Offline";
             });
+
     </script>
 </body>
 </html>
