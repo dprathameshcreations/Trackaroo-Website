@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth cursor-none">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,22 +25,25 @@
                         'shine': 'shine 3s infinite',
                         'sticker-idle': 'stickerIdle 2s infinite ease-in-out',
                         'sticker-error': 'stickerError 0.4s ease-in-out',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
                     },
                     keyframes: {
                         shine: {
                             '0%': { transform: 'translateX(-100%) skewX(-15deg)' },
                             '50%, 100%': { transform: 'translateX(200%) skewX(-15deg)' }
                         },
-                        // Bouncy "Breathing" animation like WhatsApp stickers
                         stickerIdle: {
                             '0%, 100%': { transform: 'scale(1) translateY(0)' },
                             '50%': { transform: 'scale(1.08) translateY(-3px)' }
                         },
-                        // Fast shake for error
                         stickerError: {
                             '0%, 100%': { transform: 'translateX(0)' },
                             '25%': { transform: 'translateX(-8px) rotate(-5deg)' },
                             '75%': { transform: 'translateX(8px) rotate(5deg)' }
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
                         }
                     }
                 }
@@ -66,41 +69,151 @@
             background-size: 50px 50px;
         }
 
+        /* 1. PRELOADER */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out, visibility 0.5s;
+        }
+        .loader-content { text-align: center; }
+        .loader-bar {
+            width: 0%;
+            height: 4px;
+            background: #FFD700;
+            margin-top: 20px;
+            border-radius: 2px;
+            animation: loadBar 1.5s ease-in-out forwards;
+        }
+        @keyframes loadBar { 0% { width: 0%; } 100% { width: 200px; } }
+
+        /* 2. CUSTOM CURSOR */
+        #custom-cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 20px; height: 20px;
+            border: 2px solid #FFD700;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            mix-blend-mode: difference;
+        }
+        #custom-cursor.active {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 215, 0, 0.3);
+            border-color: transparent;
+        }
+
+        /* 4. GLITCH EFFECT */
+        .glitch-text { position: relative; }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; 
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            clip-path: inset(44% 0 61% 0);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+            display: none;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -1px 0 #00fff9;
+            clip-path: inset(50% 0 30% 0);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+            display: none;
+        }
+        .glitch-text:hover::before, .glitch-text:hover::after { display: block; }
+
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(20% 0 80% 0); }
+            20% { clip-path: inset(60% 0 10% 0); }
+            40% { clip-path: inset(40% 0 50% 0); }
+            60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(10% 0 70% 0); }
+            100% { clip-path: inset(30% 0 40% 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(10% 0 60% 0); }
+            20% { clip-path: inset(30% 0 20% 0); }
+            40% { clip-path: inset(70% 0 10% 0); }
+            60% { clip-path: inset(20% 0 50% 0); }
+            80% { clip-path: inset(60% 0 30% 0); }
+            100% { clip-path: inset(40% 0 70% 0); }
+        }
+
         /* Particle Canvas */
         #particle-canvas {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.4;
-            pointer-events: none;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; opacity: 0.4; pointer-events: none;
         }
 
-        /* Animations */
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+        /* 3D PIXEL BOT CSS */
+        .bot-scene { width: 100px; height: 100px; perspective: 600px; margin: 0 auto; }
+        .bot-cube {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+            transform: rotateX(-15deg) rotateY(25deg); transition: transform 0.5s;
+            animation: botIdle 3s ease-in-out infinite;
+        }
+        .bot-face {
+            position: absolute; width: 100px; height: 100px; background: #FFD700;
+            border: 4px solid #000; opacity: 0.95; display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+        .bot-front  { transform: rotateY(0deg) translateZ(50px); }
+        .bot-back   { transform: rotateY(180deg) translateZ(50px); background: #e6c200; }
+        .bot-right  { transform: rotateY(90deg) translateZ(50px); background: #d4b200; }
+        .bot-left   { transform: rotateY(-90deg) translateZ(50px); background: #d4b200; }
+        .bot-top    { transform: rotateX(90deg) translateZ(50px); background: #ffe033; }
+        .bot-bottom { transform: rotateX(-90deg) translateZ(50px); background: #bfa000; }
+        
+        .eyes { display: flex; gap: 20px; margin-bottom: 10px; transition: all 0.3s; }
+        .eye { width: 16px; height: 16px; background: #000; border-radius: 2px; animation: botBlink 4s infinite; }
+        .mouth { width: 30px; height: 6px; background: #000; border-radius: 2px; transition: all 0.3s; }
+        
+        .bot-cube.error-shake { animation: botShake 0.5s ease-in-out both; }
+        .bot-cube.error-shake .bot-face { background: #EF4444; border-color: #7F1D1D; }
+        .bot-cube.error-shake .eye { height: 4px; background: #fff; transform: rotate(45deg); animation: none; }
+        .bot-cube.error-shake .eye::after { content: ''; position: absolute; width: 16px; height: 4px; background: #fff; transform: rotate(90deg); }
+        .bot-cube.error-shake .mouth { width: 20px; height: 20px; border-radius: 50%; background: #7F1D1D; }
+
+        @keyframes botIdle {
+            0%, 100% { transform: rotateX(-10deg) rotateY(20deg) translateY(0); }
+            50% { transform: rotateX(-10deg) rotateY(20deg) translateY(-10px); }
+        }
+        @keyframes botBlink { 0%, 48%, 52%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.1); } }
+        @keyframes botShake {
+            0%, 100% { transform: rotateX(-10deg) rotateY(20deg) translateX(0); }
+            20%, 60% { transform: rotateX(-10deg) rotateY(10deg) translateX(-10px); }
+            40%, 80% { transform: rotateX(-10deg) rotateY(30deg) translateX(10px); }
         }
 
-        .animate-blob { animation: blob 10s infinite; }
-        @keyframes blob {
-            0% { transform: translate(0px, 0px) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0px, 0px) scale(1); }
+        /* Scroll Reveal Utility Class */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #FFD700; }
-
-        /* Text Selection */
-        ::selection { background-color: #FFD700; color: #000; }
+        /* 6. MAGNETIC TILT CARD */
+        .tilt-card {
+            transition: transform 0.1s;
+            transform-style: preserve-3d;
+        }
 
         /* Mouse Light Effect */
         #cursor-light {
@@ -110,39 +223,79 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 9999; /* Ensure it's on top but allows clicks through */
-            background: radial-gradient(600px at var(--x) var(--y), rgba(255, 215, 0, 0.15), transparent 80%);
-            mix-blend-mode: screen; /* Blends nicely with dark bg */
+            z-index: 9999;
+            background: radial-gradient(300px circle at var(--x) var(--y), rgba(255, 215, 0, 0.08), transparent 60%);
+            mix-blend-mode: screen; 
         }
 
         /* WhatsApp Style Sticker Effect */
         .emoji-sticker {
             font-size: 4.5rem;
             display: inline-block;
-            /* Drop shadow creates the "Sticker" pop-out look */
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); 
             transition: transform 0.2s;
             cursor: default;
+        }
+
+        /* BENTO GRID STYLES */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            padding: 2rem 0;
+        }
+        .bento-item {
+            background-color: #0f0f11;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .bento-item:hover {
+            border-color: #FFD700;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(255, 215, 0, 0.15);
+        }
+        .bento-col-span-2 { grid-column: span 2; }
+        .bento-row-span-2 { grid-row: span 2; }
+
+        @media (max-width: 768px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .bento-col-span-2, .bento-row-span-2 { grid-column: span 1; grid-row: span 1; }
         }
     </style>
 </head>
 <body class="bg-black text-slate-300 overflow-x-hidden">
 
-    <!-- Global Mouse Light Overlay -->
-    <div id="cursor-light"></div>
+    <!-- 1. PRELOADER -->
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="relative w-16 h-16 flex items-center justify-center mx-auto mb-4 animate-bounce">
+                <div class="bg-white p-2 rounded-xl shadow-2xl shadow-yellow-500/20 border border-white/10">
+                    <img src="Logo.png" alt="Loading" class="w-full h-full object-contain">
+                </div>
+            </div>
+            <h1 class="text-2xl font-bold text-white tracking-widest uppercase">PixelRoot</h1>
+            <div class="loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- 2. CUSTOM CURSOR -->
+    <div id="custom-cursor"></div>
+
+    <!-- Global Mouse Light Overlay (Subtler) -->
+    <div id="cursor-light" class="fixed top-0 left-0 w-full h-full pointer-events-none z-[9990]" 
+         style="background: radial-gradient(300px circle at var(--x) var(--y), rgba(255, 215, 0, 0.08), transparent 60%); mix-blend-mode: screen;"></div>
 
     <!-- Navigation -->
     <nav class="bg-black/90 backdrop-blur-lg fixed w-full z-50 border-b border-white/10 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
-                
-                <!-- Logo Area -->
                 <div class="flex items-center gap-3 group cursor-pointer" onclick="window.scrollTo(0,0)">
-                    <!-- Enhanced Logo Container -->
                     <div class="relative w-12 h-12 flex items-center justify-center">
-                        <!-- Glow Effect behind -->
                         <div class="absolute inset-0 bg-yellow-500 blur-md opacity-20 group-hover:opacity-60 transition duration-500 rounded-xl"></div>
-                        <!-- Logo Box (Added group-hover:rotate-12 here) -->
                         <div class="relative bg-white p-1.5 rounded-xl shadow-2xl shadow-yellow-500/10 border border-white/10 group-hover:scale-105 group-hover:rotate-12 transition transform duration-300 w-full h-full flex items-center justify-center">
                             <img src="Logo.png" alt="PixelRoot Studio Logo" class="w-full h-full object-contain">
                         </div>
@@ -153,29 +306,28 @@
                     </div>
                 </div>
                 
-                <!-- Desktop Menu -->
                 <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#services" class="text-sm font-medium text-slate-400 hover:text-yellow-400 transition">Services</a>
-                    <a href="#products" class="text-sm font-medium text-slate-400 hover:text-yellow-400 transition">Software</a>
-                    <a href="#gallery" class="text-sm font-medium text-slate-400 hover:text-yellow-400 transition">Portfolio</a>
-                    <a href="#contact" class="text-sm font-medium text-slate-400 hover:text-yellow-400 transition">Contact</a>
-                    <a href="#contact" class="bg-yellow-400 text-black px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-yellow-400/20 hover:bg-white transition transform hover:-translate-y-0.5">
-                        Get a Quote
-                    </a>
+                    <a href="#about" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">About</a>
+                    <a href="#services" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Services</a>
+                    <a href="#products" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Software</a>
+                    <a href="#gallery" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Portfolio</a>
+                    <div class="magnetic-wrap">
+                        <a href="#contact" class="cursor-hover magnetic-btn block bg-yellow-400 text-black px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-yellow-400/20 hover:bg-white transition transform">
+                            Get a Quote
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Mobile Menu Button -->
                 <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-slate-300 hover:text-white focus:outline-none p-2">
+                    <button id="mobile-menu-btn" class="cursor-hover text-slate-300 hover:text-white focus:outline-none p-2 transition-transform duration-300">
                         <i class="fa-solid fa-bars text-2xl"></i>
                     </button>
                 </div>
             </div>
         </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-t border-white/10 absolute w-full left-0 shadow-2xl">
+        <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-t border-white/10 absolute w-full left-0 shadow-2xl transition-all duration-300 ease-in-out">
             <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="#about" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">About Us</a>
                 <a href="#services" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">Services</a>
                 <a href="#products" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">Software</a>
                 <a href="#gallery" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">Portfolio</a>
@@ -186,27 +338,20 @@
 
     <!-- Hero Section -->
     <section class="pt-36 pb-24 hero-pattern relative min-h-screen flex items-center overflow-hidden">
-        
-        <!-- 🕸️ Tech Particle Network Canvas -->
         <canvas id="particle-canvas"></canvas>
-
-        <!-- Background Glows (Parallax) -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="parallax-element absolute top-20 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-[120px] animate-blob" data-speed="2"></div>
             <div class="parallax-element absolute bottom-20 right-1/4 w-96 h-96 bg-zinc-800/20 rounded-full blur-[120px] animate-blob" style="animation-delay: 2s" data-speed="-2"></div>
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-16 relative z-10">
-            
-            <!-- Text Content -->
-            <div class="md:w-1/2 text-center md:text-left">
-                <!-- Badge -->
+            <div class="md:w-1/2 text-center md:text-left reveal-on-scroll">
                 <div class="inline-flex items-center gap-2 bg-zinc-900 border border-white/10 text-yellow-400 px-4 py-1.5 rounded-full text-xs font-bold mb-8 shadow-inner backdrop-blur-sm">
                     <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
                     Accepting New Projects
                 </div>
                 
-                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 text-white tracking-tight">
+                <h1 class="glitch-text text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 text-white tracking-tight cursor-default" data-text="Design That Grows.">
                     Design That <br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600">Grows.</span>
                 </h1>
@@ -214,45 +359,33 @@
                 <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
                     Every strong brand starts with a root. We help startups and businesses create strong visual identities, from logos to digital strategies, built for long-term growth.
                 </p>
-                
                 <div class="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
-                    <a href="#contact" class="group flex items-center justify-center gap-4 bg-yellow-400 text-black px-8 py-4 rounded-xl text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] hover:scale-105 transition duration-300 hover:bg-white">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        Start Your Project
-                    </a>
-                    <a href="#services" class="group flex items-center justify-center gap-4 bg-zinc-900 text-white px-8 py-4 rounded-xl text-lg font-bold border border-white/10 hover:bg-zinc-800 transition duration-300">
+                    <div class="magnetic-wrap">
+                        <a href="#contact" class="cursor-hover magnetic-btn group flex items-center justify-center gap-4 bg-yellow-400 text-black px-8 py-4 rounded-xl text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            Start Your Project
+                        </a>
+                    </div>
+                    <a href="#services" class="cursor-hover group flex items-center justify-center gap-4 bg-zinc-900 text-white px-8 py-4 rounded-xl text-lg font-bold border border-white/10 hover:bg-zinc-800 transition duration-300">
                         <i class="fa-solid fa-arrow-down"></i>
                         View Services
                     </a>
                 </div>
             </div>
 
-            <!-- 3D Visual (Agency Mockup) -->
-            <div class="md:w-1/2 relative perspective-1000 parallax-container">
-                <!-- 3D Card -->
+            <div class="md:w-1/2 relative perspective-1000 parallax-container reveal-on-scroll" style="transition-delay: 0.2s;">
                 <div class="parallax-element relative bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl shadow-yellow-900/10 p-2 animate-float transform rotate-y-6 rotate-x-6 hover:rotate-0 transition duration-700 ease-out" data-speed="1.5">
-                    
-                    <!-- Glass Reflection -->
                     <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl pointer-events-none z-20"></div>
-
-                    <!-- App Window Frame -->
                     <div class="bg-black rounded-2xl overflow-hidden aspect-video flex flex-col relative group border border-white/5">
-                        
-                        <!-- Top Bar -->
                         <div class="h-10 bg-zinc-900 border-b border-white/5 flex items-center px-4 gap-2">
                             <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
                             <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
                             <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
                             <div class="ml-4 bg-black px-3 py-1 rounded text-xs text-yellow-500/50 font-mono tracking-widest">PIXELROOT_STUDIO_DESIGN_SYSTEM</div>
                         </div>
-
-                        <!-- Content Mockup -->
                         <div class="flex-1 p-6 relative">
-                            <!-- Background Glow -->
                             <div class="absolute top-10 right-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
-
                             <div class="grid grid-cols-2 gap-4 mb-6">
-                                <!-- Card 1 -->
                                 <div class="bg-zinc-900/80 p-4 rounded-xl border border-white/5 hover:border-yellow-500/30 transition">
                                     <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center text-yellow-400 mb-3">
                                         <i class="fa-solid fa-pen-nib"></i>
@@ -263,7 +396,6 @@
                                         <div class="h-full w-3/4 bg-yellow-400"></div>
                                     </div>
                                 </div>
-                                <!-- Card 2 -->
                                 <div class="bg-zinc-900/80 p-4 rounded-xl border border-white/5 hover:border-yellow-500/30 transition">
                                     <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white mb-3">
                                         <i class="fa-solid fa-image"></i>
@@ -272,10 +404,7 @@
                                     <div class="text-lg font-bold text-white">124+</div>
                                 </div>
                             </div>
-
-                            <!-- Design Elements -->
                             <div class="flex gap-4 items-center">
-                                <!-- Enhanced Logo Visual in 3D Card -->
                                 <div class="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,215,0,0.3)] p-3 relative group overflow-hidden">
                                     <div class="absolute inset-0 bg-white/20 -skew-x-12 -translate-x-full animate-shine pointer-events-none"></div>
                                     <img src="Logo.png" alt="PixelRoot Logo" class="w-full h-full object-contain drop-shadow-xl transform group-hover:scale-110 transition duration-500">
@@ -293,49 +422,140 @@
         </div>
     </section>
 
+    <!-- NEW: BENTO GRID SECTION (REPLACED MARQUEE) -->
+    <section class="py-16 bg-black border-y border-white/5 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-8 text-center">Our Expertise</h2>
+            <div class="bento-grid">
+                <!-- Large Item 1 -->
+                <div class="bento-item bento-col-span-2">
+                    <div class="absolute top-4 right-4 text-yellow-400 text-3xl"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Visual Identity</h3>
+                    <p class="text-slate-400 max-w-sm">We craft memorable brands that stand the test of time. Logos, palettes, and typography that speak your language.</p>
+                </div>
+                <!-- Small Item 2 -->
+                <div class="bento-item">
+                    <div class="text-4xl font-bold text-white mb-1">Ready</div>
+                    <p class="text-sm text-yellow-400 font-bold uppercase tracking-wide">To Scale</p>
+                </div>
+                <!-- Small Item 3 -->
+                <div class="bento-item">
+                    <div class="text-4xl font-bold text-white mb-1">100%</div>
+                    <p class="text-sm text-green-400 font-bold uppercase tracking-wide">Quality Focused</p>
+                </div>
+                <!-- Large Item 4 -->
+                <div class="bento-item bento-col-span-2">
+                    <div class="absolute top-4 right-4 text-yellow-400 text-3xl"><i class="fa-solid fa-code"></i></div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Digital Solutions</h3>
+                    <p class="text-slate-400 max-w-sm">From landing pages to complex Windows applications like Trackaroo, we build software that works.</p>
+                </div>
+                <!-- Small Item 5 -->
+                <div class="bento-item flex flex-col justify-center items-center text-center">
+                     <i class="fa-brands fa-figma text-4xl text-white mb-2"></i>
+                     <p class="text-slate-400 text-sm">Figma Expert</p>
+                </div>
+                 <!-- Small Item 6 -->
+                 <div class="bento-item flex flex-col justify-center items-center text-center">
+                    <i class="fa-solid fa-pen-nib text-4xl text-white mb-2"></i>
+                    <p class="text-slate-400 text-sm">Illustrator</p>
+               </div>
+               <!-- Wide Item 7 -->
+                <div class="bento-item bento-col-span-1 sm:col-span-3 lg:col-span-1 bg-yellow-400 text-black border-yellow-500">
+                    <h3 class="text-xl font-bold mb-1">Let's Talk</h3>
+                    <p class="text-sm opacity-80 mb-4">Have an idea? Let's build it.</p>
+                    <a href="#contact" class="inline-block bg-black text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-800 transition">Contact Us &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="py-24 bg-black relative border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div class="reveal-on-scroll">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">About PixelRoot Studio</h2>
+                    <h3 class="text-xl font-bold text-yellow-400 mb-6">Every strong brand starts with a root.</h3>
+                    <div class="space-y-4 text-slate-400 text-lg leading-relaxed">
+                        <p>
+                            PixelRoot Studio is a creative design studio built to help startups, small businesses, and growing brands create a strong visual identity from the ground up.
+                        </p>
+                        <p>
+                            We believe design is more than good looks. It's about clarity, strategy, and building a foundation that helps a business grow over time.
+                        </p>
+                    </div>
+                    <div class="mt-8">
+                        <p class="text-white font-bold italic border-l-4 border-yellow-400 pl-4">
+                            "At PixelRoot Studio, we don't just design visuals, we help brands grow from the root."
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="relative reveal-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="bg-zinc-900 p-8 rounded-3xl border border-white/10 relative overflow-hidden group">
+                        <div class="absolute -inset-1 bg-gradient-to-br from-yellow-500/20 to-transparent opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                        <div class="relative z-10 grid gap-6">
+                            <div class="bg-black/50 p-6 rounded-2xl border border-white/5 flex items-center gap-4">
+                                <div class="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center text-black font-bold text-xl">P</div>
+                                <div>
+                                    <h4 class="text-white font-bold">Pixel</h4>
+                                    <p class="text-sm text-slate-500">Digital, Technology, Modern</p>
+                                </div>
+                            </div>
+                            <div class="bg-black/50 p-6 rounded-2xl border border-white/5 flex items-center gap-4">
+                                <div class="w-12 h-12 bg-zinc-800 rounded-xl flex items-center justify-center text-white font-bold text-xl"><i class="fa-solid fa-tree"></i></div>
+                                <div>
+                                    <h4 class="text-white font-bold">Root</h4>
+                                    <p class="text-sm text-slate-500">Foundation, Stability, Growth</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Services Section -->
     <section id="services" class="py-24 bg-zinc-950 relative border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-20">
+            <div class="text-center mb-20 reveal-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">What We Offer</h2>
                 <p class="text-lg text-slate-400 max-w-2xl mx-auto">Full-stack design and digital solutions tailored for startups and growing businesses.</p>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <!-- Service 1 -->
-                <div class="group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Tilt Card 1 -->
+                <div class="tilt-card group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300 reveal-on-scroll cursor-hover" style="transition-delay: 0.1s;">
                     <div class="w-12 h-12 bg-white/5 text-yellow-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-yellow-400 group-hover:text-black transition">
                         <i class="fa-solid fa-pen-fancy"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-2 text-white">Logo Design</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">Unique, memorable logos that act as the face of your brand. Simplicity and scalability.</p>
+                    <p class="text-sm text-slate-400 leading-relaxed">Unique, memorable logos that act as the face of your brand.</p>
                 </div>
-
-                <!-- Service 2 -->
-                <div class="group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300">
+                <!-- Tilt Card 2 -->
+                <div class="tilt-card group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300 reveal-on-scroll cursor-hover" style="transition-delay: 0.2s;">
                     <div class="w-12 h-12 bg-white/5 text-yellow-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-yellow-400 group-hover:text-black transition">
                         <i class="fa-solid fa-layer-group"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-2 text-white">Branding</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">Complete visual systems including color palettes, typography, and visual guidelines.</p>
+                    <p class="text-sm text-slate-400 leading-relaxed">Complete visual systems including color palettes and typography.</p>
                 </div>
-
-                <!-- Service 3 -->
-                <div class="group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300">
+                <!-- Tilt Card 3 -->
+                <div class="tilt-card group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300 reveal-on-scroll cursor-hover" style="transition-delay: 0.3s;">
                     <div class="w-12 h-12 bg-white/5 text-yellow-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-yellow-400 group-hover:text-black transition">
                         <i class="fa-solid fa-hashtag"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-2 text-white">Social Media</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">Engaging posts, banners, and ad designs optimized for Instagram, LinkedIn, and Facebook.</p>
+                    <p class="text-sm text-slate-400 leading-relaxed">Engaging posts and ad designs optimized for all platforms.</p>
                 </div>
-
-                <!-- Service 4 (NEW) -->
-                <div class="group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300">
+                <!-- Tilt Card 4 -->
+                <div class="tilt-card group bg-black p-6 rounded-3xl border border-white/10 hover:border-yellow-500 transition duration-300 reveal-on-scroll cursor-hover" style="transition-delay: 0.4s;">
                     <div class="w-12 h-12 bg-white/5 text-yellow-400 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-yellow-400 group-hover:text-black transition">
                         <i class="fa-solid fa-code"></i>
                     </div>
                     <h3 class="text-lg font-bold mb-2 text-white">Software Solutions</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">Custom Windows applications and digital tools built to solve specific business problems.</p>
+                    <p class="text-sm text-slate-400 leading-relaxed">Custom Windows applications and digital tools for business.</p>
                 </div>
             </div>
         </div>
@@ -345,50 +565,37 @@
     <section id="products" class="py-24 bg-black border-t border-white/5 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                
-                <!-- Product Info -->
-                <div class="order-2 md:order-1">
+                <div class="order-2 md:order-1 reveal-on-scroll">
                     <div class="inline-flex items-center gap-2 bg-yellow-400/10 text-yellow-400 px-3 py-1 rounded-full text-xs font-bold mb-4 border border-yellow-400/20">
                         <i class="fa-solid fa-rocket"></i> Flagship Product
                     </div>
                     <h2 class="text-4xl font-extrabold mb-6 text-white">Trackaroo <span class="text-slate-500 text-2xl font-light">| Subscription Manager</span></h2>
-                    <p class="text-lg text-slate-400 mb-8">Our first in-house software product. Trackaroo helps businesses and freelancers track recurring expenses, manage renewals, and prevent SaaS sprawl.</p>
-                    
+                    <p class="text-lg text-slate-400 mb-8">Our first in-house software product. Trackaroo helps businesses and freelancers track recurring expenses.</p>
                     <div class="space-y-4 mb-8">
                         <div class="flex items-center gap-4">
                             <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-400"><i class="fa-solid fa-check"></i></div>
-                            <span class="text-slate-200">Auto-Renewal Alerts (Desktop & Email)</span>
+                            <span class="text-slate-200">Auto-Renewal Alerts</span>
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-400"><i class="fa-solid fa-check"></i></div>
                             <span class="text-slate-200">Multi-User Team Workspaces</span>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-400"><i class="fa-solid fa-check"></i></div>
-                            <span class="text-slate-200">Expense Analytics Dashboard</span>
-                        </div>
                     </div>
-
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <!-- Updated Download Button with Access Check -->
-                        <a href="#" onclick="openAccessModal(event)" class="flex items-center justify-center gap-3 bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-yellow-400 transition shadow-lg">
-                            <i class="fa-brands fa-windows"></i> Download for Windows
-                        </a>
+                        <div class="magnetic-wrap">
+                            <a href="#" onclick="openAccessModal(event)" class="cursor-hover magnetic-btn flex items-center justify-center gap-3 bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-yellow-400 transition shadow-lg">
+                                <i class="fa-brands fa-windows"></i> Download for Windows
+                            </a>
+                        </div>
                         <p id="trackaroo-version" class="flex items-center text-sm text-slate-500">
                             <i class="fa-solid fa-spinner fa-spin mr-2"></i> Checking version...
                         </p>
                     </div>
                 </div>
-
-                <!-- Product Visual (Trackaroo Mockup - Reskinned) -->
-                <div class="order-1 md:order-2">
+                <div class="order-1 md:order-2 reveal-on-scroll" style="transition-delay: 0.2s;">
                     <div class="bg-zinc-900 p-6 rounded-3xl shadow-2xl border border-white/10 relative group hover:border-yellow-500/30 transition duration-500">
-                        <!-- Glow -->
                         <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-[80px] pointer-events-none"></div>
-
-                        <!-- App Window -->
                         <div class="space-y-4 relative z-10">
-                            <!-- Mockup Header -->
                             <div class="flex items-center justify-between border-b border-white/5 pb-4">
                                 <div class="flex gap-2">
                                     <div class="w-3 h-3 rounded-full bg-zinc-700"></div>
@@ -396,8 +603,6 @@
                                 </div>
                                 <div class="text-xs text-slate-500 font-mono">Trackaroo v1.0.1</div>
                             </div>
-
-                            <!-- List Item 1 -->
                             <div class="flex items-center gap-4 bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center text-indigo-400 font-bold">
                                     <i class="fa-solid fa-briefcase"></i>
@@ -411,8 +616,6 @@
                                     <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded">ACTIVE</span>
                                 </div>
                             </div>
-                            
-                            <!-- List Item 2 -->
                             <div class="flex items-center gap-4 bg-black/40 p-3 rounded-xl border border-white/5 border-l-4 border-l-red-500">
                                 <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 font-bold">
                                     <i class="fa-solid fa-wifi"></i>
@@ -426,8 +629,6 @@
                                     <span class="text-[10px] text-red-400 font-bold bg-red-400/10 px-2 py-0.5 rounded">EXPIRING</span>
                                 </div>
                             </div>
-
-                             <!-- List Item 3 -->
                              <div class="flex items-center gap-4 bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400 font-bold">
                                     <i class="fa-brands fa-figma"></i>
@@ -448,126 +649,51 @@
         </div>
     </section>
 
-    <!-- Gallery Section (Updated) -->
+    <!-- Gallery Section -->
     <section id="gallery" class="py-24 bg-zinc-950 relative border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-12">
+            <div class="text-center mb-12 reveal-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Portfolio</h2>
                 <p class="text-lg text-slate-400 max-w-2xl mx-auto">From branding visual identities to functional software products.</p>
             </div>
-
-            <!-- Tab Buttons -->
-            <div class="flex flex-wrap justify-center gap-4 mb-10">
-                <button onclick="switchTab('logo')" id="tab-logo" class="gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-yellow-500 bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 cursor-default">
+            <div class="flex flex-wrap justify-center gap-4 mb-10 reveal-on-scroll">
+                <button onclick="switchTab('logo')" id="tab-logo" class="cursor-hover gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-yellow-500 bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 cursor-default">
                     Logos
                 </button>
-                <button onclick="switchTab('branding')" id="tab-branding" class="gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30">
+                <button onclick="switchTab('branding')" id="tab-branding" class="cursor-hover gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30">
                     Branding
                 </button>
-                <button onclick="switchTab('social')" id="tab-social" class="gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30">
+                <button onclick="switchTab('social')" id="tab-social" class="cursor-hover gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30">
                     Social Media
                 </button>
-                <button onclick="switchTab('software')" id="tab-software" class="gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30">
+                <button onclick="switchTab('software')" id="tab-software" class="cursor-hover gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30">
                     Software
                 </button>
             </div>
-
-            <!-- Image Container -->
-            <div class="relative w-full max-w-5xl mx-auto aspect-video bg-black rounded-2xl border border-white/10 shadow-2xl overflow-hidden group">
-                <!-- Images Area -->
+            <div class="relative w-full max-w-5xl mx-auto aspect-video bg-black rounded-2xl border border-white/10 shadow-2xl overflow-hidden group reveal-on-scroll">
                 <div class="relative h-full w-full rounded-2xl overflow-hidden flex items-center justify-center">
-                    
-                    <!-- PLACEHOLDERS: User should replace these images -->
                     <div id="img-logo" class="gallery-img absolute inset-0 w-full h-full flex flex-col items-center justify-center transition-opacity duration-500 opacity-100 bg-black">
                         <i class="fa-solid fa-shapes text-6xl text-yellow-500 mb-4"></i>
                         <p class="text-xl font-bold">Logo Portfolio Placeholder</p>
                     </div>
-                    
                     <div id="img-branding" class="gallery-img absolute inset-0 w-full h-full flex flex-col items-center justify-center transition-opacity duration-500 opacity-0 bg-black">
                         <i class="fa-solid fa-book-open text-6xl text-blue-400 mb-4"></i>
                         <p class="text-xl font-bold">Branding Portfolio Placeholder</p>
                     </div>
-
                     <div id="img-social" class="gallery-img absolute inset-0 w-full h-full flex flex-col items-center justify-center transition-opacity duration-500 opacity-0 bg-black">
                         <i class="fa-solid fa-share-nodes text-6xl text-purple-400 mb-4"></i>
                         <p class="text-xl font-bold">Social Media Portfolio Placeholder</p>
                     </div>
-
-                    <!-- NEW: Software Tab Content (Shows Trackaroo Preview) -->
                     <div id="img-software" class="gallery-img absolute inset-0 w-full h-full flex flex-col items-center justify-center transition-opacity duration-500 opacity-0 bg-black p-8">
                         <div class="relative w-full h-full flex items-center justify-center">
-                            <!-- Large Featured Screenshot with Controls -->
                             <div class="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-zinc-900">
                                 <img id="software-main-img" src="app-dashboard.png" alt="Trackaroo Dashboard" class="w-full h-full object-contain p-2 transition-all duration-500">
-                                
-                                <!-- Navigation Arrows -->
-                                <button onclick="changeSlide(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-yellow-500 text-white hover:text-black w-10 h-10 rounded-full flex items-center justify-center transition backdrop-blur-sm border border-white/10">
+                                <button onclick="changeSlide(-1)" class="cursor-hover absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-yellow-500 text-white hover:text-black w-10 h-10 rounded-full flex items-center justify-center transition backdrop-blur-sm border border-white/10">
                                     <i class="fa-solid fa-chevron-left"></i>
                                 </button>
-                                <button onclick="changeSlide(1)" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-yellow-500 text-white hover:text-black w-10 h-10 rounded-full flex items-center justify-center transition backdrop-blur-sm border border-white/10">
+                                <button onclick="changeSlide(1)" class="cursor-hover absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-yellow-500 text-white hover:text-black w-10 h-10 rounded-full flex items-center justify-center transition backdrop-blur-sm border border-white/10">
                                     <i class="fa-solid fa-chevron-right"></i>
                                 </button>
-
-                                <!-- Caption -->
-                                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
-                                    <span id="software-caption" class="text-sm font-bold text-white">Dashboard Overview</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Brand Philosophy -->
-    <section id="philosophy" class="py-24 bg-zinc-950 border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                
-                <!-- Text -->
-                <div class="order-2 md:order-1">
-                    <h2 class="text-3xl font-bold mb-6 text-white">Our Philosophy <span class="text-yellow-500">.</span></h2>
-                    <p class="text-lg text-slate-400 mb-8">We believe design is more than good looks. It's about clarity, strategy, and building a foundation that helps a business grow.</p>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-4 bg-black p-4 rounded-xl border border-white/10 hover:border-yellow-500/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-lightbulb"></i></div>
-                            <div>
-                                <h4 class="font-bold text-white">Originality</h4>
-                                <p class="text-sm text-slate-500">Strong, authentic foundation.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4 bg-black p-4 rounded-xl border border-white/10 hover:border-yellow-500/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-eye"></i></div>
-                            <div>
-                                <h4 class="font-bold text-white">Clarity</h4>
-                                <p class="text-sm text-slate-500">Clear, simple, purposeful design.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4 bg-black p-4 rounded-xl border border-white/10 hover:border-yellow-500/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-trophy"></i></div>
-                            <div>
-                                <h4 class="font-bold text-white">Excellence</h4>
-                                <p class="text-sm text-slate-500">High-quality within budget.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Live Card Example (Philosophy Visual) -->
-                <div class="order-1 md:order-2 parallax-element" data-speed="1">
-                    <div class="bg-black p-8 rounded-3xl shadow-2xl border border-white/10 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-[80px] pointer-events-none"></div>
-
-                        <div class="space-y-6 relative z-10 text-center">
-                            <div class="inline-block p-4 bg-yellow-400 rounded-2xl text-black text-4xl mb-2">
-                                <i class="fa-solid fa-seedling"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold text-white">From the Root Up</h3>
-                            <p class="text-slate-400">"Pixel" represents modern digital tools. "Root" represents a strong foundation. Together, we build brands that last.</p>
-                            <div class="flex justify-center gap-2 mt-4">
-                                <span class="h-1 w-20 bg-yellow-500 rounded-full"></span>
                             </div>
                         </div>
                     </div>
@@ -579,14 +705,11 @@
     <!-- Developer Contact Section -->
     <section id="contact" class="py-24 bg-black relative overflow-hidden border-t border-white/5">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-12">
+            <div class="text-center mb-12 reveal-on-scroll">
                 <h2 class="text-3xl font-bold mb-4 text-white">Ready to Grow Your Brand?</h2>
                 <p class="text-slate-400">Contact us today to discuss your vision and budget.</p>
             </div>
-            
-            <div class="bg-zinc-900/50 backdrop-blur-md rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10 hover:border-yellow-500/30 transition duration-500">
-                
-                <!-- Identity -->
+            <div class="bg-zinc-900/50 backdrop-blur-md rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10 hover:border-yellow-500/30 transition duration-500 reveal-on-scroll">
                 <div class="text-center md:text-left">
                     <div class="mb-4 inline-block p-3 bg-yellow-400/10 rounded-2xl border border-yellow-500/20">
                         <i class="fa-solid fa-envelope-open-text text-3xl text-yellow-400"></i>
@@ -595,13 +718,10 @@
                     <h3 class="text-4xl font-extrabold tracking-tight text-white">PixelRoot Studio</h3>
                     <p class="text-slate-400 mt-2 text-lg">By Dprathamesh Creations</p>
                 </div>
-
                 <div class="hidden md:block w-px h-32 bg-white/10"></div>
-
-                <!-- Interactive Contact Details -->
                 <div class="flex flex-col gap-6 w-full md:w-auto">
-                    <!-- CALL BUTTON -->
-                    <a href="tel:+919768117514" class="group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-yellow-500 transition border border-white/10 hover:border-yellow-400">
+                    <!-- RESTORED: Phone Number -->
+                    <a href="tel:+919768117514" class="cursor-hover group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-yellow-500 transition border border-white/10 hover:border-yellow-400">
                         <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl group-hover:text-black">
                             <i class="fa-solid fa-phone"></i>
                         </div>
@@ -610,15 +730,14 @@
                             <p class="font-bold text-xl tracking-wide text-white group-hover:text-black">+91 97681 17514</p>
                         </div>
                     </a>
-
-                    <!-- EMAIL BUTTON -->
-                    <a href="mailto:dprathameshcreations@gmail.com" class="group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-white transition border border-white/10 hover:border-white">
+                    <!-- RESTORED: Email -->
+                    <a href="mailto:grow@pixelrootstudio.in" class="cursor-hover group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-white transition border border-white/10 hover:border-white">
                         <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl group-hover:text-black group-hover:bg-black/10">
                             <i class="fa-solid fa-envelope"></i>
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-semibold uppercase group-hover:text-black">Send Email</p>
-                            <p class="font-bold text-lg tracking-wide text-white group-hover:text-black">dprathameshcreations@gmail.com</p>
+                            <p class="font-bold text-lg tracking-wide text-white group-hover:text-black">grow@pixelrootstudio.in</p>
                         </div>
                     </a>
                 </div>
@@ -630,81 +749,114 @@
     <footer class="bg-black py-10 border-t border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-slate-500 gap-6">
             <div class="flex items-center gap-3 opacity-70 hover:opacity-100 transition">
-                <!-- Footer Logo -->
                 <div class="bg-white p-1 rounded-lg w-8 h-8 flex items-center justify-center">
                     <img src="Logo.png" alt="PixelRoot Studio Logo" class="w-6 h-6 object-contain">
                 </div>
                 <span class="font-bold text-lg text-slate-300">PixelRoot Studio</span>
-                <span class="text-sm">© 2026 All Rights Reserved</span>
             </div>
-            <div class="text-sm">
-                Developed by <span class="text-slate-300 font-semibold">Dprathamesh Creations</span>
-            </div>
+            <div class="text-sm">Developed by <span class="text-slate-300 font-semibold">Dprathamesh Creations</span></div>
         </div>
     </footer>
 
     <!-- Access Modal -->
     <div id="access-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
         <div class="bg-zinc-900 border border-yellow-400/30 rounded-2xl p-8 max-w-md w-full shadow-2xl relative animate-float">
-            <!-- Close Button -->
-            <button onclick="closeAccessModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            
+            <button onclick="closeAccessModal()" class="cursor-hover absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-6">
-                <!-- Animated Sticker Container (Hidden initially) -->
-                <div id="sticker-container" class="w-full flex justify-center mb-4 hidden">
-                    <!-- High-Res Emoji Styled as 3D Sticker -->
-                    <span id="sticker-emoji" class="emoji-sticker">🔐</span>
+                <div id="bot-container" class="w-full flex justify-center mb-8 hidden animate-pop-in h-[100px]">
+                    <div class="bot-scene"><div class="bot-cube"><div class="bot-face bot-front"><div class="flex flex-col items-center"><div class="eyes"><div class="eye"></div><div class="eye"></div></div><div class="mouth"></div></div></div><div class="bot-face bot-back"></div><div class="bot-face bot-right"></div><div class="bot-face bot-left"></div><div class="bot-face bot-top"></div><div class="bot-face bot-bottom"></div></div></div>
                 </div>
-
-                <!-- Default Lock Icon (Initially Visible) -->
-                <div id="lock-icon" class="w-16 h-16 bg-yellow-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-400/30">
-                    <i class="fa-solid fa-lock text-3xl text-yellow-400"></i>
-                </div>
-                
+                <div id="lock-icon" class="w-16 h-16 bg-yellow-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-400/30"><i class="fa-solid fa-lock text-3xl text-yellow-400"></i></div>
                 <h3 class="text-2xl font-bold text-white mb-2">Early Access Only</h3>
-                <p class="text-slate-400 text-sm">This software is currently in invite-only beta. Please enter your access key to download.</p>
             </div>
-
             <form onsubmit="verifyAccessKey(event)" class="space-y-4">
-                <div>
-                    <input type="text" id="access-key-input" placeholder="Enter Access Key" 
-                           class="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition text-center tracking-widest uppercase">
-                </div>
-                <button type="submit" class="w-full bg-yellow-400 hover:bg-white text-black font-bold py-3 rounded-lg transition transform active:scale-95">
-                    Unlock Download
-                </button>
+                <input type="text" id="access-key-input" placeholder="Enter Access Key" class="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition text-center tracking-widest uppercase">
+                <button type="submit" class="cursor-hover w-full bg-yellow-400 hover:bg-white text-black font-bold py-3 rounded-lg transition transform active:scale-95">Unlock Download</button>
             </form>
-            <p id="access-error" class="text-red-500 text-xs text-center mt-4 hidden">
-                <i class="fa-solid fa-circle-exclamation mr-1"></i> Invalid Access Key
-            </p>
+            <p id="access-error" class="text-red-500 text-xs text-center mt-4 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Invalid Access Key</p>
         </div>
     </div>
 
     <!-- Scripts -->
     <script>
-        // --- 1. Gallery Logic (Modified for PixelRoot) ---
-        function switchTab(tabName) {
-            // Reset Tabs
-            document.querySelectorAll('.gallery-tab').forEach(t => {
-                t.className = "gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30 cursor-pointer";
-            });
-            // Set Active Tab
-            const activeBtn = document.getElementById(`tab-${tabName}`);
-            if(activeBtn) {
-                activeBtn.className = "gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-yellow-500 bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 cursor-default";
-            }
+        // --- PRELOADER ---
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                preloader.style.visibility = 'hidden';
+            }, 1500); // 1.5s delay
+        });
 
-            // Switch Images
+        // --- CUSTOM CURSOR ---
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            // Mouse Light
+            const light = document.getElementById('cursor-light');
+            if(light) {
+                light.style.setProperty('--x', e.clientX + 'px');
+                light.style.setProperty('--y', e.clientY + 'px');
+            }
+        });
+
+        // Add hover effect to all links and buttons
+        const hoverElements = document.querySelectorAll('a, button, .cursor-hover');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        });
+
+        // --- MAGNETIC BUTTONS ---
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            });
+            btn.addEventListener('mouseleave', () => btn.style.transform = 'translate(0, 0)');
+        });
+
+        // --- SCROLL REVEAL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('is-visible');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+        // --- 3D TILT CARDS ---
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -10; // Max 10deg
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            });
+        });
+
+        // --- EXISTING LOGIC (Gallery, Auth, etc) ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.gallery-tab').forEach(t => t.className = "cursor-hover gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30 cursor-pointer");
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if(activeBtn) activeBtn.className = "cursor-hover gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-yellow-500 bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 cursor-default";
+            
             document.querySelectorAll('.gallery-img').forEach(img => img.classList.replace('opacity-100', 'opacity-0'));
             const activeImg = document.getElementById(`img-${tabName}`);
-            if(activeImg) {
-                activeImg.classList.replace('opacity-0', 'opacity-100');
-            }
+            if(activeImg) activeImg.classList.replace('opacity-0', 'opacity-100');
         }
 
-        // --- Software Screenshot Carousel Logic ---
         const softwareImages = [
             { src: 'app-dashboard.png', caption: 'Dashboard Overview' },
             { src: 'app-add-sub.png', caption: 'Add New Subscription' },
@@ -712,116 +864,70 @@
             { src: 'app-login.png', caption: 'Login Screen' }
         ];
         let currentSlide = 0;
-
         function changeSlide(direction) {
             currentSlide += direction;
             if (currentSlide >= softwareImages.length) currentSlide = 0;
             if (currentSlide < 0) currentSlide = softwareImages.length - 1;
-
             const imgElement = document.getElementById('software-main-img');
             const captionElement = document.getElementById('software-caption');
-            
-            // Simple fade effect
             imgElement.style.opacity = 0;
             setTimeout(() => {
                 imgElement.src = softwareImages[currentSlide].src;
-                captionElement.innerText = softwareImages[currentSlide].caption;
+                if(captionElement) captionElement.innerText = softwareImages[currentSlide].caption;
                 imgElement.style.opacity = 1;
             }, 200);
         }
 
-        // --- 2. Enhanced Particle Network Effect (Yellow Theme) ---
+        // --- Particle & Auth Logic remains same as previous version ---
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
-        
         let width, height;
         let particles = [];
-        
-        const particleCount = 50; 
-        const connectionDistance = 150; 
-        const mouseDistance = 200; 
-
         let mouse = { x: null, y: null };
 
         class Particle {
             constructor() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
+                this.x = Math.random() * width; this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
                 this.size = Math.random() * 2 + 1;
-                // Yellow particles
                 this.color = `rgba(255, 215, 0, ${Math.random() * 0.5 + 0.2})`; 
             }
-
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
+                this.x += this.vx; this.y += this.vy;
                 if (this.x < 0 || this.x > width) this.vx *= -1;
                 if (this.y < 0 || this.y > height) this.vy *= -1;
             }
-
             draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill();
             }
         }
 
         function initParticles() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            particles = [];
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
+            width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight;
+            particles = []; for (let i = 0; i < 50; i++) particles.push(new Particle());
         }
 
         function animateParticles() {
             ctx.clearRect(0, 0, width, height);
-            
             particles.forEach((p, index) => {
-                p.update();
-                p.draw();
-
+                p.update(); p.draw();
                 for (let j = index; j < particles.length; j++) {
                     const p2 = particles[j];
-                    const dx = p.x - p2.x;
-                    const dy = p.y - p2.y;
+                    const dx = p.x - p2.x; const dy = p.y - p2.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < connectionDistance) {
+                    if (distance < 150) {
                         ctx.beginPath();
-                        // Yellow Lines
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - connectionDistance)})`; 
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.stroke();
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - distance/150)})`;
+                        ctx.lineWidth = 0.5; ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
                     }
                 }
-
                 if (mouse.x != null) {
-                    const dx = p.x - mouse.x;
-                    const dy = p.y - mouse.y;
+                    const dx = p.x - mouse.x; const dy = p.y - mouse.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < mouseDistance) {
+                    if (distance < 200) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.4 * (1 - distance/mouseDistance)})`; 
-                        ctx.lineWidth = 0.8;
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(mouse.x, mouse.y);
-                        ctx.stroke();
-
-                        // Gentle push away from mouse
-                        if (distance < 100) {
-                            const angle = Math.atan2(dy, dx);
-                            const force = (100 - distance) / 100; 
-                            p.vx -= Math.cos(angle) * force * 0.5;
-                            p.vy -= Math.sin(angle) * force * 0.5;
-                        }
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.4 * (1 - distance/200)})`;
+                        ctx.lineWidth = 0.8; ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
                     }
                 }
             });
@@ -829,131 +935,61 @@
         }
 
         window.addEventListener('resize', initParticles);
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.x;
-            mouse.y = e.y;
-            
-            const elements = document.querySelectorAll('.parallax-element');
-            const x = (window.innerWidth - e.pageX) / 100;
-            const y = (window.innerHeight - e.pageY) / 100;
-            elements.forEach(el => {
-                const speed = el.getAttribute('data-speed') || 1;
-                el.style.transform = `translateX(${x * speed}px) translateY(${y * speed}px)`;
-            });
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+        initParticles(); animateParticles();
 
-            // Update CSS Variables for global light effect
-            const light = document.getElementById('cursor-light');
-            if(light) {
-                light.style.setProperty('--x', e.clientX + 'px');
-                light.style.setProperty('--y', e.clientY + 'px');
-            }
-        });
-        
-        window.addEventListener('mouseout', () => {
-            mouse.x = null;
-            mouse.y = null;
-        });
-
-        initParticles();
-        animateParticles();
-
-        // --- Mobile Menu ---
-        const btnMenu = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
-
-        if(btnMenu && menu) {
-            btnMenu.addEventListener('click', () => {
-                menu.classList.toggle('hidden');
-            });
-        }
-
-        // --- 3. Trackaroo Download & Access Key Logic ---
-        // Obfuscated GitHub Link
+        // Auth Logic
         const _0x5f1a=['dHJhY2thcm9v','Z3Jvd3M=','cmVsZWFzZXM=','YnJvd3Nlcl9kb3dubG9hZF91cmw=','dGFnX25hbWU=','ZG93bmxvYWQ=','Z3JlZW4=','eWVsbG93','Z3JleQ==','aW5jbHVkZXM=','U2V0dXAuZXhl','anNvbg==','dGhlbg==','b2s=','ZXJyb3I=','bG9n','R2l0SHViIE9mZmxpbmU=','aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy8=','Lw==','L3JlbGVhc2VzL2xhdGVzdA==','ZGVzaWdu','ZGVzaWduZXI=','bWFrZQ==','YnVpbGQ=','ZGVwbG95'];
-        const _0x2c4e = function(index) {
-            return atob(_0x5f1a[index]); 
-        };
-
-        const _rO = 'ZHByYXRoYW1lc2hjcmVhdGlvbnM='; // Base64 Owner
-        const _rN = 'VHJhY2thcm9vLUFwcC1SZWxlYXNl'; // Base64 Repo
-        
+        const _0x2c4e = function(index) { return atob(_0x5f1a[index]); };
+        const _rO = 'ZHByYXRoYW1lc2hjcmVhdGlvbnM='; const _rN = 'VHJhY2thcm9vLUFwcC1SZWxlYXNl';
         const trackarooVersionInfo = document.getElementById('trackaroo-version');
-        let actualDownloadUrl = ''; 
-
-        // Access Key Management
         const ACCESS_KEY = "TRACKAROO-BETA"; 
         
         function openAccessModal(e) {
             if(e) e.preventDefault();
             const modal = document.getElementById('access-modal');
-            const stickerContainer = document.getElementById('sticker-container');
-            const sticker = document.getElementById('sticker-emoji');
+            const botContainer = document.getElementById('bot-container');
+            const botCube = botContainer.querySelector('.bot-cube');
             const lock = document.getElementById('lock-icon');
-            
-            // Reset State
             modal.classList.remove('hidden');
             document.getElementById('access-key-input').value = '';
             document.getElementById('access-error').classList.add('hidden');
-            
-            // Show Lock Sticker (Idle State)
-            lock.classList.add('hidden'); // Hide font-awesome lock
-            stickerContainer.classList.remove('hidden');
-            sticker.innerText = "🔐"; // Initial Lock
-            sticker.className = "emoji-sticker animate-sticker-idle";
+            lock.classList.remove('hidden');
+            botContainer.classList.add('hidden');
+            botCube.classList.remove('error-shake');
         }
 
-        function closeAccessModal() {
-            document.getElementById('access-modal').classList.add('hidden');
-        }
+        function closeAccessModal() { document.getElementById('access-modal').classList.add('hidden'); }
 
-        // Show Animated Reaction on Error
         function triggerBotReaction() {
-            const sticker = document.getElementById('sticker-emoji');
-
-            // Change to "Dizzy" or "Facepalm" or "No"
-            sticker.innerText = "😵‍💫"; // Dizzy face
-            sticker.className = "emoji-sticker animate-sticker-error";
-            
-            // Revert after shake
-            setTimeout(() => {
-                sticker.innerText = "🔐";
-                sticker.className = "emoji-sticker animate-sticker-idle";
-            }, 600);
+            const botContainer = document.getElementById('bot-container');
+            const lockIcon = document.getElementById('lock-icon');
+            const botCube = botContainer.querySelector('.bot-cube');
+            lockIcon.classList.add('hidden');
+            botContainer.classList.remove('hidden');
+            botCube.classList.remove('error-shake');
+            void botCube.offsetWidth; 
+            botCube.classList.add('error-shake');
         }
 
-        // IMPORTANT: The fetch logic is moved INSIDE verifyAccessKey
         function verifyAccessKey(e) {
             e.preventDefault();
             const input = document.getElementById('access-key-input').value.trim().toUpperCase();
-            
             if (input === ACCESS_KEY) {
-                // Success Animation
-                const sticker = document.getElementById('sticker-emoji');
-                sticker.innerText = "🔓"; // Unlock
-                sticker.className = "emoji-sticker animate-pulse";
-
-                // Show loading state on button
                 const btn = e.target.querySelector('button');
                 const originalText = btn.innerText;
                 btn.innerText = "Fetching Secure Link...";
                 btn.disabled = true;
-
-                // Decode and Fetch ONLY now
                 const apiUrl = `https://api.github.com/repos/${atob(_rO)}/${atob(_rN)}/releases/latest`;
-
                 fetch(apiUrl)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Auth Failed');
-                        return response.json();
-                    })
+                    .then(response => { if (!response.ok) throw new Error('Auth Failed'); return response.json(); })
                     .then(data => {
                         const setupAsset = data.assets.find(asset => asset.name.includes('Setup.exe'));
                         if (setupAsset) {
                             window.location.href = setupAsset.browser_download_url;
-                            setTimeout(closeAccessModal, 1000); // Wait for animation
-                        } else {
-                            throw new Error("Asset missing");
-                        }
+                            closeAccessModal();
+                        } else { throw new Error("Asset missing"); }
                     })
                     .catch(err => {
                         document.getElementById('access-error').innerText = "Download Error. Please try again.";
@@ -961,29 +997,22 @@
                         btn.innerText = originalText;
                         btn.disabled = false;
                     });
-
             } else {
-                triggerBotReaction(); // Show animated error sticker
+                triggerBotReaction();
                 document.getElementById('access-error').innerText = "Invalid Access Key. Please try again.";
                 document.getElementById('access-error').classList.remove('hidden');
             }
         }
-
-        // Auto-Version Check on Load (Optional - leaks repo name if someone looks closely)
+        
         const tagsUrl = `https://api.github.com/repos/${atob(_rO)}/${atob(_rN)}/tags`;
         fetch(tagsUrl)
             .then(res => res.json())
             .then(data => {
-                if(data && data.length > 0) {
-                    if(trackarooVersionInfo) {
-                        trackarooVersionInfo.innerHTML = `<i class="fa-solid fa-circle-check text-green-500 mr-2"></i> Version ${data[0].name}`;
-                    }
+                if(data && data.length > 0 && trackarooVersionInfo) {
+                    trackarooVersionInfo.innerHTML = `<i class="fa-solid fa-circle-check text-green-500 mr-2"></i> Version ${data[0].name}`;
                 }
             })
-            .catch(e => {
-                if(trackarooVersionInfo) trackarooVersionInfo.innerText = "Version Check: Offline";
-            });
-
+            .catch(e => { if(trackarooVersionInfo) trackarooVersionInfo.innerText = "Version Check: Offline"; });
     </script>
 </body>
 </html>
