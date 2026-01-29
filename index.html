@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth cursor-none">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +15,9 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    screens: {
+                        'xs': '475px',
+                    },
                     colors: {
                         brand: {
                             yellow: '#FFD700', 
@@ -27,7 +30,6 @@
                         'sticker-idle': 'stickerIdle 2s infinite ease-in-out',
                         'sticker-error': 'stickerError 0.4s ease-in-out',
                         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-                        'float': 'float 6s ease-in-out infinite',
                     },
                     keyframes: {
                         shine: {
@@ -50,10 +52,6 @@
                         fadeInUp: {
                             '0%': { opacity: '0', transform: 'translateY(20px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' }
                         }
                     }
                 }
@@ -101,7 +99,7 @@
         }
         @keyframes loadBar { 0% { width: 0%; } 100% { width: 200px; } }
 
-        /* 2. CUSTOM CURSOR */
+        /* 2. CUSTOM CURSOR - DESKTOP ONLY */
         #custom-cursor {
             position: fixed;
             top: 0; left: 0;
@@ -113,6 +111,7 @@
             transform: translate(-50%, -50%);
             transition: width 0.2s, height 0.2s, background-color 0.2s;
             mix-blend-mode: difference;
+            display: none; /* Hidden by default */
         }
         #custom-cursor.active {
             width: 50px;
@@ -120,16 +119,51 @@
             background-color: rgba(255, 215, 0, 0.3);
             border-color: transparent;
         }
+        /* Only show custom cursor on devices that support hover */
+        @media (hover: hover) and (pointer: fine) {
+            #custom-cursor { display: block; }
+            html { cursor: none; }
+        }
 
-        /* TEXT SHINE CLASS - Restored for the Design System Badge */
-        .text-shine-effect {
-            background: linear-gradient(to right, #666666 20%, #FFD700 50%, #666666 80%);
-            background-size: 200% auto;
-            color: #888;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: textShine 3s linear infinite;
+        /* 4. GLITCH EFFECT */
+        .glitch-text { position: relative; }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; 
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            clip-path: inset(44% 0 61% 0);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+            display: none;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -1px 0 #00fff9;
+            clip-path: inset(50% 0 30% 0);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+            display: none;
+        }
+        /* Only glitch on hover */
+        .glitch-text:hover::before, .glitch-text:hover::after { display: block; }
+
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(20% 0 80% 0); }
+            20% { clip-path: inset(60% 0 10% 0); }
+            40% { clip-path: inset(40% 0 50% 0); }
+            60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(10% 0 70% 0); }
+            100% { clip-path: inset(30% 0 40% 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(10% 0 60% 0); }
+            20% { clip-path: inset(30% 0 20% 0); }
+            40% { clip-path: inset(70% 0 10% 0); }
+            60% { clip-path: inset(20% 0 50% 0); }
+            80% { clip-path: inset(60% 0 30% 0); }
+            100% { clip-path: inset(40% 0 70% 0); }
         }
 
         /* Particle Canvas */
@@ -207,6 +241,11 @@
             z-index: 9999;
             background: radial-gradient(300px circle at var(--x) var(--y), rgba(255, 215, 0, 0.08), transparent 60%);
             mix-blend-mode: screen; 
+            /* Hide on touch devices */
+            display: none; 
+        }
+        @media (hover: hover) and (pointer: fine) {
+            #cursor-light { display: block; }
         }
 
         /* BENTO GRID STYLES */
@@ -237,6 +276,17 @@
             .bento-grid { grid-template-columns: 1fr; }
             .bento-col-span-2, .bento-row-span-2 { grid-column: span 1; grid-row: span 1; }
         }
+
+        /* Mobile specific fixes */
+        @media (max-width: 640px) {
+            .hero-pattern { background-size: 30px 30px; }
+            .glitch-text { font-size: 2.5rem; line-height: 1.1; }
+            .magnetic-wrap { display: block; width: 100%; }
+            .magnetic-btn { width: 100%; text-align: center; }
+            
+            /* Reset transforms on mobile for better scrolling */
+            .reveal-on-scroll { opacity: 1; transform: none; transition: none; }
+        }
     </style>
 </head>
 <body class="bg-black text-slate-300 overflow-x-hidden">
@@ -254,27 +304,26 @@
         </div>
     </div>
 
-    <!-- 2. CUSTOM CURSOR -->
+    <!-- 2. CUSTOM CURSOR (Hidden on Mobile via CSS) -->
     <div id="custom-cursor"></div>
 
-    <!-- Global Mouse Light Overlay (Subtler) -->
-    <div id="cursor-light" class="fixed top-0 left-0 w-full h-full pointer-events-none z-[9990]" 
-         style="background: radial-gradient(300px circle at var(--x) var(--y), rgba(255, 215, 0, 0.08), transparent 60%); mix-blend-mode: screen;"></div>
+    <!-- Global Mouse Light Overlay (Desktop Only) -->
+    <div id="cursor-light"></div>
 
     <!-- Navigation -->
     <nav class="bg-black/90 backdrop-blur-lg fixed w-full z-50 border-b border-white/10 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex items-center gap-3 group cursor-pointer" onclick="window.scrollTo(0,0)">
-                    <div class="relative w-12 h-12 flex items-center justify-center">
+                    <div class="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
                         <div class="absolute inset-0 bg-yellow-500 blur-md opacity-20 group-hover:opacity-60 transition duration-500 rounded-xl"></div>
                         <div class="relative bg-white p-1.5 rounded-xl shadow-2xl shadow-yellow-500/10 border border-white/10 group-hover:scale-105 group-hover:rotate-12 transition transform duration-300 w-full h-full flex items-center justify-center">
                             <img src="Logo.png" alt="PixelRoot Studio Logo" class="w-full h-full object-contain">
                         </div>
                     </div>
                     <div class="flex flex-col justify-center">
-                        <span class="font-extrabold text-2xl tracking-tight text-white group-hover:text-yellow-400 transition leading-none">PixelRoot</span>
-                        <span class="text-[10px] font-medium text-slate-500 tracking-[0.2em] uppercase group-hover:text-white transition mt-0.5">Studio</span>
+                        <span class="font-extrabold text-xl md:text-2xl tracking-tight text-white group-hover:text-yellow-400 transition leading-none">PixelRoot</span>
+                        <span class="text-[8px] md:text-[10px] font-medium text-slate-500 tracking-[0.2em] uppercase group-hover:text-white transition mt-0.5">Studio</span>
                     </div>
                 </div>
                 
@@ -297,7 +346,7 @@
                 </div>
             </div>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-t border-white/10 absolute w-full left-0 shadow-2xl transition-all duration-300 ease-in-out">
+        <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-t border-white/10 absolute w-full left-0 shadow-2xl transition-all duration-300 ease-in-out z-40">
             <div class="px-4 pt-4 pb-6 space-y-2">
                 <a href="#about" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">About Us</a>
                 <a href="#services" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">Services</a>
@@ -309,48 +358,48 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="pt-36 pb-24 hero-pattern relative min-h-screen flex items-center overflow-hidden">
+    <section class="pt-32 pb-16 md:pt-36 md:pb-24 hero-pattern relative min-h-screen flex items-center overflow-hidden">
         <canvas id="particle-canvas"></canvas>
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="parallax-element absolute top-20 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-[120px] animate-blob" data-speed="2"></div>
             <div class="parallax-element absolute bottom-20 right-1/4 w-96 h-96 bg-zinc-800/20 rounded-full blur-[120px] animate-blob" style="animation-delay: 2s" data-speed="-2"></div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-16 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12 md:gap-16 relative z-10">
             <div class="md:w-1/2 text-center md:text-left reveal-on-scroll">
-                <div class="inline-flex items-center gap-2 bg-zinc-900 border border-white/10 text-yellow-400 px-4 py-1.5 rounded-full text-xs font-bold mb-8 shadow-inner backdrop-blur-sm">
+                <div class="inline-flex items-center gap-2 bg-zinc-900 border border-white/10 text-yellow-400 px-4 py-1.5 rounded-full text-xs font-bold mb-6 md:mb-8 shadow-inner backdrop-blur-sm">
                     <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
                     Accepting New Projects
                 </div>
                 
-                <h1 class="glitch-text text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 text-white tracking-tight cursor-default" data-text="Design That Grows.">
+                <h1 class="glitch-text text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 md:mb-6 text-white tracking-tight cursor-default" data-text="Design That Grows.">
                     Design That <br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600">Grows.</span>
                 </h1>
                 
-                <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                <p class="text-base md:text-lg lg:text-xl text-slate-400 mb-8 md:mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
                     Every strong brand starts with a root. We help startups and businesses create strong visual identities, from logos to digital strategies, built for long-term growth.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
+                <div class="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center md:justify-start">
                     <div class="magnetic-wrap">
-                        <a href="#contact" class="cursor-hover magnetic-btn group flex items-center justify-center gap-4 bg-yellow-400 text-black px-8 py-4 rounded-xl text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white">
+                        <a href="#contact" class="cursor-hover magnetic-btn group flex items-center justify-center gap-3 md:gap-4 bg-yellow-400 text-black px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white w-full sm:w-auto">
                             <i class="fa-solid fa-paper-plane"></i>
                             Start Your Project
                         </a>
                     </div>
-                    <a href="#services" class="cursor-hover group flex items-center justify-center gap-4 bg-zinc-900 text-white px-8 py-4 rounded-xl text-lg font-bold border border-white/10 hover:bg-zinc-800 transition duration-300">
+                    <a href="#services" class="cursor-hover group flex items-center justify-center gap-3 md:gap-4 bg-zinc-900 text-white px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold border border-white/10 hover:bg-zinc-800 transition duration-300 w-full sm:w-auto">
                         <i class="fa-solid fa-arrow-down"></i>
                         View Services
                     </a>
                 </div>
             </div>
 
-            <div class="md:w-1/2 relative perspective-1000 parallax-container reveal-on-scroll" style="transition-delay: 0.2s;">
+            <div class="md:w-1/2 relative perspective-1000 parallax-container reveal-on-scroll mt-8 md:mt-0" style="transition-delay: 0.2s;">
                 <!-- SEPARATED CONTAINERS for Parallax (JS) and Float (CSS) to avoid conflict -->
                 <div class="parallax-element relative" data-speed="1.5">
                     <!-- The inner content floats up and down independently -->
                     <div class="animate-float">
-                        <div class="bg-black rounded-2xl overflow-hidden aspect-video flex flex-col relative group border border-white/5 shadow-2xl shadow-yellow-900/10 transform rotate-y-6 rotate-x-6 hover:rotate-0 transition duration-700 ease-out">
+                        <div class="bg-black rounded-2xl overflow-hidden aspect-video flex flex-col relative group border border-white/5 shadow-2xl shadow-yellow-900/10 transform md:rotate-y-6 md:rotate-x-6 md:hover:rotate-0 transition duration-700 ease-out">
                              <!-- Glass Reflection -->
                             <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl pointer-events-none z-20"></div>
 
@@ -358,32 +407,32 @@
                                 <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
                                 <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
                                 <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                                <!-- Restored Text Shine Animation -->
-                                <div class="ml-4 bg-black px-3 py-1 rounded text-xs font-mono tracking-widest text-shine-effect">PIXELROOT_STUDIO_DESIGN_SYSTEM</div>
+                                <!-- Text Shine Animation -->
+                                <div class="ml-4 bg-black px-3 py-1 rounded text-[10px] md:text-xs font-mono tracking-widest text-shine-effect truncate">PIXELROOT_STUDIO_DESIGN_SYSTEM</div>
                             </div>
-                            <div class="flex-1 p-6 relative">
+                            <div class="flex-1 p-4 md:p-6 relative">
                                 <div class="absolute top-10 right-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
-                                <div class="grid grid-cols-2 gap-4 mb-6">
-                                    <div class="bg-zinc-900/80 p-4 rounded-xl border border-white/5 hover:border-yellow-500/30 transition">
-                                        <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center text-yellow-400 mb-3">
+                                <div class="grid grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
+                                    <div class="bg-zinc-900/80 p-3 md:p-4 rounded-xl border border-white/5 hover:border-yellow-500/30 transition">
+                                        <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center text-yellow-400 mb-2 md:mb-3">
                                             <i class="fa-solid fa-pen-nib"></i>
                                         </div>
                                         <div class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Current Project</div>
-                                        <div class="text-lg font-bold text-white">Brand Identity</div>
+                                        <div class="text-sm md:text-lg font-bold text-white">Brand Identity</div>
                                         <div class="mt-2 h-1 w-full bg-white/10 rounded-full overflow-hidden">
                                             <div class="h-full w-3/4 bg-yellow-400"></div>
                                         </div>
                                     </div>
-                                    <div class="bg-zinc-900/80 p-4 rounded-xl border border-white/5 hover:border-yellow-500/30 transition">
-                                        <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white mb-3">
+                                    <div class="bg-zinc-900/80 p-3 md:p-4 rounded-xl border border-white/5 hover:border-yellow-500/30 transition">
+                                        <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white mb-2 md:mb-3">
                                             <i class="fa-solid fa-image"></i>
                                         </div>
                                         <div class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Assets Created</div>
-                                        <div class="text-lg font-bold text-white">124+</div>
+                                        <div class="text-sm md:text-lg font-bold text-white">124+</div>
                                     </div>
                                 </div>
                                 <div class="flex gap-4 items-center">
-                                    <div class="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,215,0,0.3)] p-3 relative group overflow-hidden">
+                                    <div class="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,215,0,0.3)] p-2 md:p-3 relative group overflow-hidden">
                                         <div class="absolute inset-0 bg-white/20 -skew-x-12 -translate-x-full animate-shine pointer-events-none"></div>
                                         <img src="Logo.png" alt="PixelRoot Logo" class="w-full h-full object-contain drop-shadow-xl transform group-hover:scale-110 transition duration-500">
                                     </div>
@@ -618,7 +667,7 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="font-bold text-white text-sm">₹1,200</p>
-                                    <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded animate-pulse">ACTIVE</span>
+                                    <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded">ACTIVE</span>
                                 </div>
                             </div>
                         </div>
@@ -688,6 +737,7 @@
                 <h2 class="text-3xl font-bold mb-4 text-white">Ready to Grow Your Brand?</h2>
                 <p class="text-slate-400">Contact us today to discuss your vision and budget.</p>
             </div>
+            
             <div class="bg-zinc-900/50 backdrop-blur-md rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10 hover:border-yellow-500/30 transition duration-500 reveal-on-scroll">
                 <div class="text-center md:text-left">
                     <div class="mb-4 inline-block p-3 bg-yellow-400/10 rounded-2xl border border-yellow-500/20">
@@ -726,7 +776,6 @@
                             <p class="font-bold text-xl tracking-wide text-white group-hover:text-black">+91 97681 17514</p>
                         </div>
                     </a>
-
                     <!-- RESTORED: Email -->
                     <a href="mailto:grow@pixelrootstudio.in" class="cursor-hover group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-white transition border border-white/10 hover:border-white">
                         <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl group-hover:text-black group-hover:bg-black/10">
