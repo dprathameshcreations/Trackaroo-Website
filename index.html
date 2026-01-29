@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth cursor-none">
+<html lang="en" class="cursor-none"> <!-- Removed scroll-smooth to use Custom JS for premium feel -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,14 +23,20 @@
                     },
                     animation: {
                         'shine': 'shine 3s infinite',
+                        'text-shine': 'textShine 3s linear infinite',
                         'sticker-idle': 'stickerIdle 2s infinite ease-in-out',
                         'sticker-error': 'stickerError 0.4s ease-in-out',
                         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'float': 'float 6s ease-in-out infinite', // Restored Float
                     },
                     keyframes: {
                         shine: {
                             '0%': { transform: 'translateX(-100%) skewX(-15deg)' },
                             '50%, 100%': { transform: 'translateX(200%) skewX(-15deg)' }
+                        },
+                        textShine: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '100%': { backgroundPosition: '200% 50%' }
                         },
                         stickerIdle: {
                             '0%, 100%': { transform: 'scale(1) translateY(0)' },
@@ -44,6 +50,10 @@
                         fadeInUp: {
                             '0%': { opacity: '0', transform: 'translateY(20px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' }
                         }
                     }
                 }
@@ -111,7 +121,6 @@
             background-color: rgba(255, 215, 0, 0.3);
             border-color: transparent;
         }
-        /* Only show custom cursor on devices that support hover */
         @media (hover: hover) and (pointer: fine) {
             #custom-cursor { display: block; }
             html { cursor: none; }
@@ -159,15 +168,14 @@
         
         /* TEXT SHINE CLASS */
         .text-shine-effect {
-            background: linear-gradient(to right, #888888 20%, #FFD700 40%, #888888 60%);
+            background: linear-gradient(to right, #666666 20%, #FFD700 50%, #666666 80%);
             background-size: 200% auto;
             color: #888;
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: textShine 4s linear infinite;
+            animation: textShine 3s linear infinite;
         }
-
 
         /* Particle Canvas */
         #particle-canvas {
@@ -284,14 +292,8 @@
         @media (max-width: 640px) {
             .hero-pattern { background-size: 30px 30px; }
             .glitch-text { font-size: 2.5rem; line-height: 1.1; }
-            /* Fix for cropped buttons in Hero */
-            .flex-col-mobile { flex-direction: column; width: 100%; }
-            .w-full-mobile { width: 100%; justify-content: center; }
-            
             .magnetic-wrap { display: block; width: 100%; }
             .magnetic-btn { width: 100%; text-align: center; justify-content: center;}
-            
-            /* Reset transforms on mobile for better scrolling */
             .reveal-on-scroll { opacity: 1; transform: none; transition: none; }
         }
     </style>
@@ -335,12 +337,13 @@
                 </div>
                 
                 <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#about" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">About</a>
-                    <a href="#services" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Services</a>
-                    <a href="#products" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Software</a>
-                    <a href="#gallery" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Portfolio</a>
+                    <a href="#about" class="custom-scroll-link cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">About</a>
+                    <a href="#services" class="custom-scroll-link cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Services</a>
+                    <a href="#products" class="custom-scroll-link cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Software</a>
+                    <a href="#gallery" class="custom-scroll-link cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Portfolio</a>
                     <div class="magnetic-wrap">
-                        <a href="#contact" class="cursor-hover magnetic-btn block bg-yellow-400 text-black px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-yellow-400/20 hover:bg-white transition transform" onclick="openAccessModal(event)">
+                        <!-- FIX: Custom Scroll Link, No Access Modal -->
+                        <a href="#contact" class="custom-scroll-link cursor-hover magnetic-btn block bg-yellow-400 text-black px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-yellow-400/20 hover:bg-white transition transform">
                             Get a Quote
                         </a>
                     </div>
@@ -387,15 +390,15 @@
                 <p class="text-base md:text-lg lg:text-xl text-slate-400 mb-8 md:mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
                     Every strong brand starts with a root. We help startups and businesses create strong visual identities, from logos to digital strategies, built for long-term growth.
                 </p>
-                <!-- Fixed Hero Buttons: flex-col on mobile, flex-row on larger -->
                 <div class="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center md:justify-start">
                     <div class="magnetic-wrap w-full sm:w-auto">
-                        <a href="#contact" class="cursor-hover magnetic-btn group flex items-center justify-center gap-3 md:gap-4 bg-yellow-400 text-black px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white w-full">
+                        <!-- FIX: Custom Scroll Link -->
+                        <a href="#contact" class="custom-scroll-link cursor-hover magnetic-btn group flex items-center justify-center gap-3 md:gap-4 bg-yellow-400 text-black px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white w-full">
                             <i class="fa-solid fa-paper-plane"></i>
                             Start Your Project
                         </a>
                     </div>
-                    <a href="#services" class="cursor-hover group flex items-center justify-center gap-3 md:gap-4 bg-zinc-900 text-white px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold border border-white/10 hover:bg-zinc-800 transition duration-300 w-full sm:w-auto">
+                    <a href="#services" class="custom-scroll-link cursor-hover group flex items-center justify-center gap-3 md:gap-4 bg-zinc-900 text-white px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold border border-white/10 hover:bg-zinc-800 transition duration-300 w-full sm:w-auto">
                         <i class="fa-solid fa-arrow-down"></i>
                         View Services
                     </a>
@@ -403,9 +406,8 @@
             </div>
 
             <div class="md:w-1/2 relative perspective-1000 parallax-container reveal-on-scroll mt-8 md:mt-0" style="transition-delay: 0.2s;">
-                <!-- SEPARATED CONTAINERS for Parallax (JS) and Float (CSS) to avoid conflict -->
                 <div class="parallax-element relative" data-speed="1.5">
-                    <!-- The inner content floats up and down independently -->
+                    <!-- FIX: Nested animate-float here -->
                     <div class="animate-float">
                         <div class="bg-black rounded-2xl overflow-hidden aspect-video flex flex-col relative group border border-white/5 shadow-2xl shadow-yellow-900/10 transform md:rotate-y-6 md:rotate-x-6 md:hover:rotate-0 transition duration-700 ease-out">
                              <!-- Glass Reflection -->
@@ -415,7 +417,7 @@
                                 <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
                                 <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
                                 <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                                <!-- Text Shine Animation -->
+                                <!-- FIX: Restored Text Shine -->
                                 <div class="ml-4 bg-black px-3 py-1 rounded text-[10px] md:text-xs font-mono tracking-widest text-shine-effect truncate">PIXELROOT_STUDIO_DESIGN_SYSTEM</div>
                             </div>
                             <div class="flex-1 p-4 md:p-6 relative">
@@ -499,7 +501,7 @@
                 <div class="bento-item bento-col-span-1 sm:col-span-3 lg:col-span-1 bg-yellow-400 text-black border-yellow-500">
                     <h3 class="text-lg md:text-xl font-bold mb-1">Let's Talk</h3>
                     <p class="text-sm opacity-80 mb-4">Have an idea? Let's build it.</p>
-                    <a href="#contact" class="inline-block bg-black text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-800 transition">Contact Us &rarr;</a>
+                    <a href="#contact" class="custom-scroll-link inline-block bg-black text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-800 transition">Contact Us &rarr;</a>
                 </div>
             </div>
         </div>
@@ -675,7 +677,7 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="font-bold text-white text-sm">₹1,200</p>
-                                    <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded animate-pulse">ACTIVE</span>
+                                    <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded">ACTIVE</span>
                                 </div>
                             </div>
                         </div>
@@ -745,7 +747,6 @@
                 <h2 class="text-3xl font-bold mb-4 text-white">Ready to Grow Your Brand?</h2>
                 <p class="text-slate-400">Contact us today to discuss your vision and budget.</p>
             </div>
-            
             <div class="bg-zinc-900/50 backdrop-blur-md rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10 hover:border-yellow-500/30 transition duration-500 reveal-on-scroll">
                 <div class="text-center md:text-left">
                     <div class="mb-4 inline-block p-3 bg-yellow-400/10 rounded-2xl border border-yellow-500/20">
@@ -835,13 +836,58 @@
 
     <!-- Scripts -->
     <script>
+        // --- CUSTOM SCROLL ENGINE (EASE OUT CUBIC) ---
+        // Replaces default CSS scroll-smooth for a "heavy/premium" feel
+        function smoothScrollTo(targetPosition, duration) {
+            const startPosition = window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                
+                // Ease Out Cubic Function: 1 - (1 - t)^3
+                let progress = timeElapsed / duration;
+                if (progress > 1) progress = 1;
+                
+                // Custom Ease Out Formula (Fast start, slow end)
+                const ease = 1 - Math.pow(1 - progress, 4); 
+
+                window.scrollTo(0, startPosition + (distance * ease));
+
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animation);
+                }
+            }
+
+            requestAnimationFrame(animation);
+        }
+
+        // Intercept Anchor Clicks for Custom Scroll
+        document.querySelectorAll('a.custom-scroll-link, a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Ignore if it's just a placeholder link or modal trigger
+                const href = this.getAttribute('href');
+                if (href === '#' || href.startsWith('mailto:') || href.startsWith('tel:') || this.hasAttribute('onclick')) return;
+
+                e.preventDefault();
+                const targetElement = document.querySelector(href);
+                if (targetElement) {
+                    // Offset for fixed header (approx 80px)
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - 100;
+                    smoothScrollTo(targetPosition, 1500); // 1.5s duration for "heavy" feel
+                }
+            });
+        });
+
         // --- PRELOADER ---
         window.addEventListener('load', () => {
             const preloader = document.getElementById('preloader');
             setTimeout(() => {
                 preloader.style.opacity = '0';
                 preloader.style.visibility = 'hidden';
-            }, 1500); // 1.5s delay
+            }, 1500); 
         });
 
         // --- CUSTOM CURSOR ---
@@ -849,18 +895,13 @@
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
-            
-            // Mouse Light
             const light = document.getElementById('cursor-light');
             if(light) {
                 light.style.setProperty('--x', e.clientX + 'px');
                 light.style.setProperty('--y', e.clientY + 'px');
             }
         });
-
-        // Add hover effect to all links and buttons
-        const hoverElements = document.querySelectorAll('a, button, .cursor-hover');
-        hoverElements.forEach(el => {
+        document.querySelectorAll('a, button, .cursor-hover').forEach(el => {
             el.addEventListener('mouseenter', () => cursor.classList.add('active'));
             el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
         });
@@ -888,13 +929,10 @@
         document.querySelectorAll('.tilt-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -10; // Max 10deg
-                const rotateY = ((x - centerX) / centerX) * 10;
-
+                const rotateX = ((e.clientY - rect.top - centerY) / centerY) * -10;
+                const rotateY = ((e.clientX - rect.left - centerX) / centerX) * 10;
                 card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
             card.addEventListener('mouseleave', () => {
@@ -902,12 +940,11 @@
             });
         });
 
-        // --- EXISTING LOGIC (Gallery, Auth, etc) ---
+        // --- GALLERY & SLIDER ---
         function switchTab(tabName) {
             document.querySelectorAll('.gallery-tab').forEach(t => t.className = "cursor-hover gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-white/10 bg-zinc-900 text-slate-400 hover:text-white hover:border-white/30 cursor-pointer");
             const activeBtn = document.getElementById(`tab-${tabName}`);
             if(activeBtn) activeBtn.className = "cursor-hover gallery-tab px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border border-yellow-500 bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 cursor-default";
-            
             document.querySelectorAll('.gallery-img').forEach(img => img.classList.replace('opacity-100', 'opacity-0'));
             const activeImg = document.getElementById(`img-${tabName}`);
             if(activeImg) activeImg.classList.replace('opacity-0', 'opacity-100');
@@ -934,7 +971,7 @@
             }, 200);
         }
 
-        // --- Particle & Auth Logic remains same as previous version ---
+        // --- PARTICLE LOGIC ---
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -995,7 +1032,7 @@
         window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
         initParticles(); animateParticles();
 
-        // Auth Logic
+        // --- AUTH & DOWNLOAD LOGIC ---
         const _0x5f1a=['dHJhY2thcm9v','Z3Jvd3M=','cmVsZWFzZXM=','YnJvd3Nlcl9kb3dubG9hZF91cmw=','dGFnX25hbWU=','ZG93bmxvYWQ=','Z3JlZW4=','eWVsbG93','Z3JleQ==','aW5jbHVkZXM=','U2V0dXAuZXhl','anNvbg==','dGhlbg==','b2s=','ZXJyb3I=','bG9n','R2l0SHViIE9mZmxpbmU=','aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy8=','Lw==','L3JlbGVhc2VzL2xhdGVzdA==','ZGVzaWdu','ZGVzaWduZXI=','bWFrZQ==','YnVpbGQ=','ZGVwbG95'];
         const _0x2c4e = function(index) { return atob(_0x5f1a[index]); };
         const _rO = 'ZHByYXRoYW1lc2hjcmVhdGlvbnM='; const _rN = 'VHJhY2thcm9vLUFwcC1SZWxlYXNl';
