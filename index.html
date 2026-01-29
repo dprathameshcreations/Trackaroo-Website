@@ -109,7 +109,7 @@
             border: 2px solid #FFD700;
             border-radius: 50%;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 10002;
             transform: translate(-50%, -50%);
             transition: width 0.2s, height 0.2s, background-color 0.2s;
             mix-blend-mode: difference;
@@ -390,6 +390,7 @@
                 <p class="text-base md:text-lg lg:text-xl text-slate-400 mb-8 md:mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
                     Every strong brand starts with a root. We help startups and businesses create strong visual identities, from logos to digital strategies, built for long-term growth.
                 </p>
+                <!-- Fixed Hero Buttons: flex-col on mobile, flex-row on larger -->
                 <div class="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center md:justify-start">
                     <div class="magnetic-wrap w-full sm:w-auto">
                         <!-- FIX: Custom Scroll Link -->
@@ -406,8 +407,9 @@
             </div>
 
             <div class="md:w-1/2 relative perspective-1000 parallax-container reveal-on-scroll mt-8 md:mt-0" style="transition-delay: 0.2s;">
+                <!-- SEPARATED CONTAINERS for Parallax (JS) and Float (CSS) to avoid conflict -->
                 <div class="parallax-element relative" data-speed="1.5">
-                    <!-- FIX: Nested animate-float here -->
+                    <!-- The inner content floats up and down independently -->
                     <div class="animate-float">
                         <div class="bg-black rounded-2xl overflow-hidden aspect-video flex flex-col relative group border border-white/5 shadow-2xl shadow-yellow-900/10 transform md:rotate-y-6 md:rotate-x-6 md:hover:rotate-0 transition duration-700 ease-out">
                              <!-- Glass Reflection -->
