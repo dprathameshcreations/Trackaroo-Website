@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth cursor-none">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,9 +15,6 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    screens: {
-                        'xs': '475px',
-                    },
                     colors: {
                         brand: {
                             yellow: '#FFD700', 
@@ -26,7 +23,6 @@
                     },
                     animation: {
                         'shine': 'shine 3s infinite',
-                        'text-shine': 'textShine 3s linear infinite',
                         'sticker-idle': 'stickerIdle 2s infinite ease-in-out',
                         'sticker-error': 'stickerError 0.4s ease-in-out',
                         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
@@ -35,10 +31,6 @@
                         shine: {
                             '0%': { transform: 'translateX(-100%) skewX(-15deg)' },
                             '50%, 100%': { transform: 'translateX(200%) skewX(-15deg)' }
-                        },
-                        textShine: {
-                            '0%': { backgroundPosition: '0% 50%' },
-                            '100%': { backgroundPosition: '200% 50%' }
                         },
                         stickerIdle: {
                             '0%, 100%': { transform: 'scale(1) translateY(0)' },
@@ -99,7 +91,7 @@
         }
         @keyframes loadBar { 0% { width: 0%; } 100% { width: 200px; } }
 
-        /* 2. CUSTOM CURSOR - DESKTOP ONLY */
+        /* 2. CUSTOM CURSOR */
         #custom-cursor {
             position: fixed;
             top: 0; left: 0;
@@ -111,7 +103,7 @@
             transform: translate(-50%, -50%);
             transition: width 0.2s, height 0.2s, background-color 0.2s;
             mix-blend-mode: difference;
-            display: none; /* Hidden by default */
+            display: none;
         }
         #custom-cursor.active {
             width: 50px;
@@ -146,7 +138,6 @@
             animation: glitch-anim-2 2s infinite linear alternate-reverse;
             display: none;
         }
-        /* Only glitch on hover */
         .glitch-text:hover::before, .glitch-text:hover::after { display: block; }
 
         @keyframes glitch-anim-1 {
@@ -165,6 +156,18 @@
             80% { clip-path: inset(60% 0 30% 0); }
             100% { clip-path: inset(40% 0 70% 0); }
         }
+        
+        /* TEXT SHINE CLASS */
+        .text-shine-effect {
+            background: linear-gradient(to right, #888888 20%, #FFD700 40%, #888888 60%);
+            background-size: 200% auto;
+            color: #888;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 4s linear infinite;
+        }
+
 
         /* Particle Canvas */
         #particle-canvas {
@@ -281,8 +284,12 @@
         @media (max-width: 640px) {
             .hero-pattern { background-size: 30px 30px; }
             .glitch-text { font-size: 2.5rem; line-height: 1.1; }
+            /* Fix for cropped buttons in Hero */
+            .flex-col-mobile { flex-direction: column; width: 100%; }
+            .w-full-mobile { width: 100%; justify-content: center; }
+            
             .magnetic-wrap { display: block; width: 100%; }
-            .magnetic-btn { width: 100%; text-align: center; }
+            .magnetic-btn { width: 100%; text-align: center; justify-content: center;}
             
             /* Reset transforms on mobile for better scrolling */
             .reveal-on-scroll { opacity: 1; transform: none; transition: none; }
@@ -304,7 +311,7 @@
         </div>
     </div>
 
-    <!-- 2. CUSTOM CURSOR (Hidden on Mobile via CSS) -->
+    <!-- 2. CUSTOM CURSOR -->
     <div id="custom-cursor"></div>
 
     <!-- Global Mouse Light Overlay (Desktop Only) -->
@@ -333,7 +340,7 @@
                     <a href="#products" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Software</a>
                     <a href="#gallery" class="cursor-hover text-sm font-medium text-slate-400 hover:text-yellow-400 transition hover:scale-105 transform">Portfolio</a>
                     <div class="magnetic-wrap">
-                        <a href="#contact" class="cursor-hover magnetic-btn block bg-yellow-400 text-black px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-yellow-400/20 hover:bg-white transition transform">
+                        <a href="#contact" class="cursor-hover magnetic-btn block bg-yellow-400 text-black px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-yellow-400/20 hover:bg-white transition transform" onclick="openAccessModal(event)">
                             Get a Quote
                         </a>
                     </div>
@@ -346,7 +353,7 @@
                 </div>
             </div>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-t border-white/10 absolute w-full left-0 shadow-2xl transition-all duration-300 ease-in-out z-40">
+        <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-t border-white/10 absolute w-full left-0 shadow-2xl transition-all duration-300 ease-in-out">
             <div class="px-4 pt-4 pb-6 space-y-2">
                 <a href="#about" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">About Us</a>
                 <a href="#services" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:text-yellow-400 hover:bg-white/5 transition">Services</a>
@@ -380,9 +387,10 @@
                 <p class="text-base md:text-lg lg:text-xl text-slate-400 mb-8 md:mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
                     Every strong brand starts with a root. We help startups and businesses create strong visual identities, from logos to digital strategies, built for long-term growth.
                 </p>
+                <!-- Fixed Hero Buttons: flex-col on mobile, flex-row on larger -->
                 <div class="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center md:justify-start">
-                    <div class="magnetic-wrap">
-                        <a href="#contact" class="cursor-hover magnetic-btn group flex items-center justify-center gap-3 md:gap-4 bg-yellow-400 text-black px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white w-full sm:w-auto">
+                    <div class="magnetic-wrap w-full sm:w-auto">
+                        <a href="#contact" class="cursor-hover magnetic-btn group flex items-center justify-center gap-3 md:gap-4 bg-yellow-400 text-black px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white w-full">
                             <i class="fa-solid fa-paper-plane"></i>
                             Start Your Project
                         </a>
@@ -451,45 +459,45 @@
     </section>
 
     <!-- NEW: BENTO GRID SECTION (REPLACED MARQUEE) -->
-    <section class="py-16 bg-black border-y border-white/5 relative">
+    <section class="py-12 md:py-16 bg-black border-y border-white/5 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-8 text-center">Our Expertise</h2>
             <div class="bento-grid">
                 <!-- Large Item 1 -->
                 <div class="bento-item bento-col-span-2">
                     <div class="absolute top-4 right-4 text-yellow-400 text-3xl"><i class="fa-solid fa-layer-group"></i></div>
-                    <h3 class="text-2xl font-bold text-white mb-2">Visual Identity</h3>
-                    <p class="text-slate-400 max-w-sm">We craft memorable brands that stand the test of time. Logos, palettes, and typography that speak your language.</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Visual Identity</h3>
+                    <p class="text-slate-400 text-sm md:text-base max-w-sm">We craft memorable brands that stand the test of time. Logos, palettes, and typography that speak your language.</p>
                 </div>
                 <!-- Small Item 2 -->
                 <div class="bento-item">
-                    <div class="text-4xl font-bold text-white mb-1">Ready</div>
-                    <p class="text-sm text-yellow-400 font-bold uppercase tracking-wide">To Scale</p>
+                    <div class="text-3xl md:text-4xl font-bold text-white mb-1">Ready</div>
+                    <p class="text-xs md:text-sm text-yellow-400 font-bold uppercase tracking-wide">To Scale</p>
                 </div>
                 <!-- Small Item 3 -->
                 <div class="bento-item">
-                    <div class="text-4xl font-bold text-white mb-1">100%</div>
-                    <p class="text-sm text-green-400 font-bold uppercase tracking-wide">Quality Focused</p>
+                    <div class="text-3xl md:text-4xl font-bold text-white mb-1">100%</div>
+                    <p class="text-xs md:text-sm text-green-400 font-bold uppercase tracking-wide">Quality Focused</p>
                 </div>
                 <!-- Large Item 4 -->
                 <div class="bento-item bento-col-span-2">
                     <div class="absolute top-4 right-4 text-yellow-400 text-3xl"><i class="fa-solid fa-code"></i></div>
-                    <h3 class="text-2xl font-bold text-white mb-2">Digital Solutions</h3>
-                    <p class="text-slate-400 max-w-sm">From landing pages to complex Windows applications like Trackaroo, we build software that works.</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Digital Solutions</h3>
+                    <p class="text-slate-400 text-sm md:text-base max-w-sm">From landing pages to complex Windows applications like Trackaroo, we build software that works.</p>
                 </div>
                 <!-- Small Item 5 -->
                 <div class="bento-item flex flex-col justify-center items-center text-center">
-                     <i class="fa-brands fa-figma text-4xl text-white mb-2"></i>
+                     <i class="fa-brands fa-figma text-3xl md:text-4xl text-white mb-2"></i>
                      <p class="text-slate-400 text-sm">Figma Expert</p>
                 </div>
                  <!-- Small Item 6 -->
                  <div class="bento-item flex flex-col justify-center items-center text-center">
-                    <i class="fa-solid fa-pen-nib text-4xl text-white mb-2"></i>
+                    <i class="fa-solid fa-pen-nib text-3xl md:text-4xl text-white mb-2"></i>
                     <p class="text-slate-400 text-sm">Illustrator</p>
                </div>
                <!-- Wide Item 7 -->
                 <div class="bento-item bento-col-span-1 sm:col-span-3 lg:col-span-1 bg-yellow-400 text-black border-yellow-500">
-                    <h3 class="text-xl font-bold mb-1">Let's Talk</h3>
+                    <h3 class="text-lg md:text-xl font-bold mb-1">Let's Talk</h3>
                     <p class="text-sm opacity-80 mb-4">Have an idea? Let's build it.</p>
                     <a href="#contact" class="inline-block bg-black text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-800 transition">Contact Us &rarr;</a>
                 </div>
@@ -667,7 +675,7 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="font-bold text-white text-sm">₹1,200</p>
-                                    <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded">ACTIVE</span>
+                                    <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded animate-pulse">ACTIVE</span>
                                 </div>
                             </div>
                         </div>
@@ -776,14 +784,15 @@
                             <p class="font-bold text-xl tracking-wide text-white group-hover:text-black">+91 97681 17514</p>
                         </div>
                     </a>
-                    <!-- RESTORED: Email -->
-                    <a href="mailto:grow@pixelrootstudio.in" class="cursor-hover group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-white transition border border-white/10 hover:border-white">
-                        <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl group-hover:text-black group-hover:bg-black/10">
+
+                    <!-- RESTORED: Email - FIXED LAYOUT -->
+                    <a href="mailto:grow@pixelrootstudio.in" class="cursor-hover group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-white transition border border-white/10 hover:border-white w-full max-w-full overflow-hidden">
+                        <div class="w-12 h-12 bg-white/10 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xl group-hover:text-black group-hover:bg-black/10">
                             <i class="fa-solid fa-envelope"></i>
                         </div>
-                        <div>
+                        <div class="min-w-0 flex-1">
                             <p class="text-xs text-slate-400 font-semibold uppercase group-hover:text-black">Send Email</p>
-                            <p class="font-bold text-lg tracking-wide text-white group-hover:text-black">grow@pixelrootstudio.in</p>
+                            <p class="font-bold text-lg tracking-wide text-white group-hover:text-black truncate">grow@pixelrootstudio.in</p>
                         </div>
                     </a>
                 </div>
@@ -795,6 +804,7 @@
     <footer class="bg-black py-10 border-t border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-slate-500 gap-6">
             <div class="flex items-center gap-3 opacity-70 hover:opacity-100 transition">
+                <!-- Footer Logo -->
                 <div class="bg-white p-1 rounded-lg w-8 h-8 flex items-center justify-center">
                     <img src="Logo.png" alt="PixelRoot Studio Logo" class="w-6 h-6 object-contain">
                 </div>
