@@ -479,7 +479,7 @@
                                 <div class="flex gap-4 items-center">
                                     <div class="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,215,0,0.3)] p-2 md:p-3 relative group overflow-hidden">
                                         <div class="absolute inset-0 bg-white/20 -skew-x-12 -translate-x-full animate-shine pointer-events-none"></div>
-                                        <img src="Logo.png" alt="PixelRoot Logo" class="w-full h-full object-contain drop-shadow-xl transform group-hover:scale-110 transition duration-500">
+                                        <img src="LogoT.png" alt="PixelRoot Logo" class="w-full h-full object-contain drop-shadow-xl transform group-hover:scale-110 transition duration-500">
                                     </div>
                                     <div class="space-y-2 flex-1">
                                         <div class="h-2 w-full bg-white/10 rounded-full"></div>
@@ -833,9 +833,9 @@
                             <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Message</label>
                             <textarea name="message" rows="4" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="Tell us about your project..."></textarea>
                         </div>
-                        <button type="submit" class="cursor-hover w-full bg-yellow-400 hover:bg-white text-black font-bold py-4 rounded-xl transition transform active:scale-95 shadow-lg shadow-yellow-400/20">
-                            Send Message
-                        </button>
+                        <button type="submit" onclick="if(this.form.checkValidity()){this.innerHTML='Thankyou <i class=\'fa-solid fa-face-smile ml-2\'></i>'}" class="cursor-hover w-full bg-yellow-400 hover:bg-white text-black font-bold py-4 rounded-xl transition transform active:scale-95 shadow-lg shadow-yellow-400/20">
+    Send Message
+</button>
                     </div>
                 </form>
             </div>
