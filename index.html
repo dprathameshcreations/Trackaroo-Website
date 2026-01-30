@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="cursor-none"> <!-- Removed scroll-smooth to use Custom JS for premium feel -->
+<html lang="en" class="cursor-none">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +27,8 @@
                         'sticker-idle': 'stickerIdle 2s infinite ease-in-out',
                         'sticker-error': 'stickerError 0.4s ease-in-out',
                         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-                        'float': 'float 6s ease-in-out infinite', // Restored Float
+                        'float': 'float 6s ease-in-out infinite',
+                        'holographic': 'holographic 3s ease infinite', // New Animation
                     },
                     keyframes: {
                         shine: {
@@ -54,6 +55,11 @@
                         float: {
                             '0%, 100%': { transform: 'translateY(0px)' },
                             '50%': { transform: 'translateY(-20px)' }
+                        },
+                        holographic: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                            '100%': { backgroundPosition: '0% 50%' }
                         }
                     }
                 }
@@ -109,7 +115,7 @@
             border: 2px solid #FFD700;
             border-radius: 50%;
             pointer-events: none;
-            z-index: 10002;
+            z-index: 9999;
             transform: translate(-50%, -50%);
             transition: width 0.2s, height 0.2s, background-color 0.2s;
             mix-blend-mode: difference;
@@ -237,7 +243,7 @@
         
         /* 6. MAGNETIC TILT CARD */
         .tilt-card {
-            transition: transform 0.1s;
+            transition: transform 0s; /* Set to 0s for instant reaction */
             transform-style: preserve-3d;
         }
 
@@ -259,27 +265,56 @@
             #cursor-light { display: block; }
         }
 
-        /* BENTO GRID STYLES */
+        /* HOLOGRAPHIC HOVER BENTO GRID */
         .bento-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             padding: 2rem 0;
+            perspective: 1000px; /* Add depth for holographic effect */
         }
         .bento-item {
-            background-color: #0f0f11;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(15, 15, 17, 0.6); /* Semi-transparent */
+            backdrop-filter: blur(10px); /* Glass effect */
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 1.5rem;
             padding: 2rem;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform-style: preserve-3d;
+        }
+        .bento-item::before {
+            /* Holographic Gradient Overlay */
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 200%; height: 100%;
+            background: linear-gradient(115deg, transparent 0%, rgba(255, 215, 0, 0.1) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 215, 0, 0.1) 55%, transparent 100%);
+            transform: translateX(-100%) skewX(-20deg);
+            transition: transform 0.5s;
+            pointer-events: none;
+            z-index: 0;
         }
         .bento-item:hover {
-            border-color: #FFD700;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px -10px rgba(255, 215, 0, 0.15);
+            border-color: rgba(255, 215, 0, 0.4);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px -10px rgba(255, 215, 0, 0.2), 
+                        0 0 20px rgba(255, 215, 0, 0.1) inset; /* Inner glow */
         }
+        .bento-item:hover::before {
+            transform: translateX(100%) skewX(-20deg); /* Sweep animation */
+            transition: transform 0.7s ease-in-out;
+        }
+        .bento-item i {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block;
+        }
+        .bento-item:hover i {
+            transform: scale(1.2) rotate(10deg);
+            color: #FFD700;
+        }
+        .bento-item > * { position: relative; z-index: 1; } /* Content above glow */
+
         .bento-col-span-2 { grid-column: span 2; }
         .bento-row-span-2 { grid-row: span 2; }
 
@@ -382,7 +417,8 @@
                     Accepting New Projects
                 </div>
                 
-                <h1 class="glitch-text text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 md:mb-6 text-white tracking-tight cursor-default" data-text="Design That Grows.">
+                <!-- SCRAMBLE TEXT HEADER -->
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 md:mb-6 text-white tracking-tight cursor-default scramble-target" data-value="Design That Grows.">
                     Design That <br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600">Grows.</span>
                 </h1>
@@ -391,15 +427,14 @@
                     Every strong brand starts with a root. We help startups and businesses create strong visual identities, from logos to digital strategies, built for long-term growth.
                 </p>
                 <!-- Fixed Hero Buttons: flex-col on mobile, flex-row on larger -->
-                <div class="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center md:justify-start">
+                <div class="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center md:justify-start w-full">
                     <div class="magnetic-wrap w-full sm:w-auto">
-                        <!-- FIX: Custom Scroll Link -->
-                        <a href="#contact" class="custom-scroll-link cursor-hover magnetic-btn group flex items-center justify-center gap-3 md:gap-4 bg-yellow-400 text-black px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white w-full">
+                        <a href="#contact" class="custom-scroll-link cursor-hover magnetic-btn group flex items-center justify-center gap-3 md:gap-4 bg-yellow-400 text-black px-6 py-3 md:py-4 rounded-xl text-sm md:text-lg font-bold shadow-[0_0_20px_rgba(255,215,0,0.2)] hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] transition duration-300 hover:bg-white w-full">
                             <i class="fa-solid fa-paper-plane"></i>
                             Start Your Project
                         </a>
                     </div>
-                    <a href="#services" class="custom-scroll-link cursor-hover group flex items-center justify-center gap-3 md:gap-4 bg-zinc-900 text-white px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold border border-white/10 hover:bg-zinc-800 transition duration-300 w-full sm:w-auto">
+                    <a href="#services" class="custom-scroll-link cursor-hover group flex items-center justify-center gap-3 md:gap-4 bg-zinc-900 text-white px-6 py-3 md:py-4 rounded-xl text-sm md:text-lg font-bold border border-white/10 hover:bg-zinc-800 transition duration-300 w-full sm:w-auto">
                         <i class="fa-solid fa-arrow-down"></i>
                         View Services
                     </a>
@@ -407,9 +442,7 @@
             </div>
 
             <div class="md:w-1/2 relative perspective-1000 parallax-container reveal-on-scroll mt-8 md:mt-0" style="transition-delay: 0.2s;">
-                <!-- SEPARATED CONTAINERS for Parallax (JS) and Float (CSS) to avoid conflict -->
                 <div class="parallax-element relative" data-speed="1.5">
-                    <!-- The inner content floats up and down independently -->
                     <div class="animate-float">
                         <div class="bg-black rounded-2xl overflow-hidden aspect-video flex flex-col relative group border border-white/5 shadow-2xl shadow-yellow-900/10 transform md:rotate-y-6 md:rotate-x-6 md:hover:rotate-0 transition duration-700 ease-out">
                              <!-- Glass Reflection -->
@@ -419,7 +452,7 @@
                                 <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
                                 <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
                                 <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                                <!-- FIX: Restored Text Shine -->
+                                <!-- Restored Text Shine Animation -->
                                 <div class="ml-4 bg-black px-3 py-1 rounded text-[10px] md:text-xs font-mono tracking-widest text-shine-effect truncate">PIXELROOT_STUDIO_DESIGN_SYSTEM</div>
                             </div>
                             <div class="flex-1 p-4 md:p-6 relative">
@@ -462,7 +495,7 @@
         </div>
     </section>
 
-    <!-- NEW: BENTO GRID SECTION (REPLACED MARQUEE) -->
+    <!-- NEW: HOLOGRAPHIC BENTO GRID SECTION -->
     <section class="py-12 md:py-16 bg-black border-y border-white/5 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-8 text-center">Our Expertise</h2>
@@ -679,7 +712,7 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="font-bold text-white text-sm">₹1,200</p>
-                                    <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded">ACTIVE</span>
+                                    <span class="text-[10px] text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded animate-pulse">ACTIVE</span>
                                 </div>
                             </div>
                         </div>
@@ -742,63 +775,69 @@
         </div>
     </section>
 
-    <!-- Developer Contact Section -->
+    <!-- 3. FUNCTIONAL CONTACT FORM (WEB3FORMS) -->
     <section id="contact" class="py-24 bg-black relative overflow-hidden border-t border-white/5">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-12 reveal-on-scroll">
                 <h2 class="text-3xl font-bold mb-4 text-white">Ready to Grow Your Brand?</h2>
                 <p class="text-slate-400">Contact us today to discuss your vision and budget.</p>
             </div>
-            <div class="bg-zinc-900/50 backdrop-blur-md rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-10 hover:border-yellow-500/30 transition duration-500 reveal-on-scroll">
-                <div class="text-center md:text-left">
-                    <div class="mb-4 inline-block p-3 bg-yellow-400/10 rounded-2xl border border-yellow-500/20">
-                        <i class="fa-solid fa-envelope-open-text text-3xl text-yellow-400"></i>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Contact Info -->
+                <div class="bg-zinc-900/50 backdrop-blur-md rounded-3xl p-10 border border-white/10 shadow-2xl flex flex-col justify-between hover:border-yellow-500/30 transition duration-500 reveal-on-scroll">
+                    <div>
+                        <div class="mb-4 inline-block p-3 bg-yellow-400/10 rounded-2xl border border-yellow-500/20">
+                            <i class="fa-solid fa-envelope-open-text text-3xl text-yellow-400"></i>
+                        </div>
+                        <p class="text-yellow-500 font-bold tracking-widest text-xs uppercase mb-1">Get in Touch</p>
+                        <h3 class="text-4xl font-extrabold tracking-tight text-white mb-6">PixelRoot Studio</h3>
+                        
+                        <div class="space-y-6">
+                            <a href="mailto:grow@pixelrootstudio.in" class="cursor-hover group flex items-center gap-4 text-slate-300 hover:text-white transition w-full max-w-full overflow-hidden">
+                                <div class="w-10 h-10 rounded-full bg-white/5 flex-shrink-0 flex items-center justify-center group-hover:bg-yellow-500 group-hover:text-black"><i class="fa-solid fa-envelope"></i></div>
+                                <span class="font-medium truncate min-w-0">grow@pixelrootstudio.in</span>
+                            </a>
+                            <a href="tel:+919768117514" class="cursor-hover group flex items-center gap-4 text-slate-300 hover:text-white transition">
+                                <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-yellow-500 group-hover:text-black"><i class="fa-solid fa-phone"></i></div>
+                                <span class="font-medium">+91 97681 17514</span>
+                            </a>
+                            <a href="https://instagram.com/pixelrootstudio" target="_blank" class="cursor-hover group flex items-center gap-4 text-slate-300 hover:text-white transition">
+                                <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-yellow-500 group-hover:text-black"><i class="fa-brands fa-instagram"></i></div>
+                                <span class="font-medium">@pixelrootstudio</span>
+                            </a>
+                        </div>
                     </div>
-                    <p class="text-yellow-500 font-bold tracking-widest text-xs uppercase mb-1">Get in Touch</p>
-                    <h3 class="text-4xl font-extrabold tracking-tight text-white">PixelRoot Studio</h3>
-                    <p class="text-slate-400 mt-2 text-lg">By Dprathamesh Creations</p>
+                    <div class="mt-8 pt-8 border-t border-white/10">
+                        <p class="text-slate-500 text-sm">Based in Mumbai, working globally.</p>
+                    </div>
                 </div>
-                <div class="hidden md:block w-px h-32 bg-white/10"></div>
-                <div class="flex flex-col gap-6 w-full md:w-auto">
-                    <!-- RESTORED: Instagram -->
-                    <a href="https://instagram.com/pixelrootstudio" target="_blank" class="cursor-hover group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-white transition border border-white/10 hover:border-white">
-                        <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl group-hover:text-black group-hover:bg-black/10">
-                            <i class="fa-brands fa-instagram"></i>
+
+                <!-- Functional Contact Form (Web3Forms) -->
+                <form action="https://api.web3forms.com/submit" method="POST" class="bg-zinc-900/30 p-8 rounded-3xl border border-white/10 reveal-on-scroll" style="transition-delay: 0.2s;">
+                    <!-- REPLACE WITH YOUR ACTUAL WEB3FORMS ACCESS KEY -->
+                    <input type="hidden" name="access_key" value="e374041d-346e-4077-bf89-2b69950967ac"> 
+                    <input type="hidden" name="subject" value="New Inquiry from PixelRoot Website">
+                    <input type="hidden" name="redirect" value="https://pixelrootstudio.in/thanks.html">
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Name</label>
+                            <input type="text" name="name" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="Your Name">
                         </div>
                         <div>
-                            <p class="text-xs text-slate-400 font-semibold uppercase group-hover:text-black">Follow Us</p>
-                            <p class="font-bold text-lg tracking-wide text-white group-hover:text-black">@pixelrootstudio</p>
-                        </div>
-                        <!-- Attached QR Code -->
-                        <div class="ml-auto hidden sm:block">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://instagram.com/pixelrootstudio" 
-                                 alt="QR" 
-                                 class="w-12 h-12 rounded-lg border border-white/20 group-hover:border-black/20">
-                        </div>
-                    </a>
-
-                    <!-- RESTORED: Phone Number -->
-                    <a href="tel:+919768117514" class="cursor-hover group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-yellow-500 transition border border-white/10 hover:border-yellow-400">
-                        <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center text-xl group-hover:text-black">
-                            <i class="fa-solid fa-phone"></i>
+                            <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Email</label>
+                            <input type="email" name="email" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="hello@company.com">
                         </div>
                         <div>
-                            <p class="text-xs text-slate-400 font-semibold uppercase group-hover:text-black">Call Now</p>
-                            <p class="font-bold text-xl tracking-wide text-white group-hover:text-black">+91 97681 17514</p>
+                            <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Message</label>
+                            <textarea name="message" rows="4" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="Tell us about your project..."></textarea>
                         </div>
-                    </a>
-
-                    <!-- RESTORED: Email - FIXED LAYOUT -->
-                    <a href="mailto:grow@pixelrootstudio.in" class="cursor-hover group flex items-center gap-5 bg-black p-4 rounded-xl hover:bg-white transition border border-white/10 hover:border-white w-full max-w-full overflow-hidden">
-                        <div class="w-12 h-12 bg-white/10 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xl group-hover:text-black group-hover:bg-black/10">
-                            <i class="fa-solid fa-envelope"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <p class="text-xs text-slate-400 font-semibold uppercase group-hover:text-black">Send Email</p>
-                            <p class="font-bold text-lg tracking-wide text-white group-hover:text-black truncate">grow@pixelrootstudio.in</p>
-                        </div>
-                    </a>
-                </div>
+                        <button type="submit" class="cursor-hover w-full bg-yellow-400 hover:bg-white text-black font-bold py-4 rounded-xl transition transform active:scale-95 shadow-lg shadow-yellow-400/20">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </section>
@@ -838,6 +877,72 @@
 
     <!-- Scripts -->
     <script>
+// --- 2. TEXT SCRAMBLE EFFECT ---
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span class="dud" style="color:#555">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        // Initialize Scramble on Hover
+        const scrambleElement = document.querySelector('.scramble-target');
+        if(scrambleElement) {
+            const fx = new TextScramble(scrambleElement);
+            const originalText = scrambleElement.getAttribute('data-value');
+            
+            scrambleElement.addEventListener('mouseenter', () => {
+                fx.setText(originalText);
+            });
+        }
+
         // --- CUSTOM SCROLL ENGINE (EASE OUT CUBIC) ---
         // Replaces default CSS scroll-smooth for a "heavy/premium" feel
         function smoothScrollTo(targetPosition, duration) {
@@ -929,15 +1034,23 @@
 
         // --- 3D TILT CARDS ---
         document.querySelectorAll('.tilt-card').forEach(card => {
+            // FIX: Instant tracking logic
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'none'; // Instant reaction
+            });
+
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                const rotateX = ((e.clientY - rect.top - centerY) / centerY) * -10;
-                const rotateY = ((e.clientX - rect.left - centerX) / centerX) * 10;
+                const rotateX = ((e.clientY - rect.top - centerY) / centerY) * -15; // increased tilt slightly
+                const rotateY = ((e.clientX - rect.left - centerX) / centerX) * 15;
+
                 card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
+
             card.addEventListener('mouseleave', () => {
+                card.style.transition = 'transform 0.5s ease-out'; // Smooth return
                 card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
             });
         });
