@@ -933,6 +933,16 @@
 
     <!-- Scripts -->
     <script>
+        // --- ANTI-THEFT PROTECTION ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { return false; } // F12
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } // Ctrl+Shift+I
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } // Ctrl+Shift+C
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } // Ctrl+Shift+J
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } // Ctrl+U
+        }
+
         // --- MOBILE MENU TOGGLE ---
 const mobileBtn = document.getElementById('mobile-menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
@@ -1221,7 +1231,7 @@ if(mobileBtn && mobileMenu) {
         const _0x2c4e = function(index) { return atob(_0x5f1a[index]); };
         const _rO = 'ZHByYXRoYW1lc2hjcmVhdGlvbnM='; const _rN = 'VHJhY2thcm9vLUFwcC1SZWxlYXNl';
         const trackarooVersionInfo = document.getElementById('trackaroo-version');
-        const ACCESS_KEY = "TRACKAROO-BETA"; 
+        const _SECURE_HASH = "VFJBQ0tBUk9PLUJFVEE="; 
         
         function openAccessModal(e) {
             if(e) e.preventDefault();
@@ -1251,10 +1261,10 @@ if(mobileBtn && mobileMenu) {
         }
 
         function verifyAccessKey(e) {
-            e.preventDefault();
-            const input = document.getElementById('access-key-input').value.trim().toUpperCase();
-            if (input === ACCESS_KEY) {
-                const btn = e.target.querySelector('button');
+    e.preventDefault();
+    const input = document.getElementById('access-key-input').value.trim().toUpperCase();
+    if (btoa(input) === _SECURE_HASH) { 
+        const btn = e.target.querySelector('button');
                 const originalText = btn.innerText;
                 btn.innerText = "Fetching Secure Link...";
                 btn.disabled = true;
