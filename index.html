@@ -858,32 +858,44 @@
                 </div>
 
                 <!-- Functional Contact Form (Web3Forms) -->
-                <form action="https://api.web3forms.com/submit" method="POST" class="bg-zinc-900/30 p-8 rounded-3xl border border-white/10 reveal-on-scroll" style="transition-delay: 0.2s;">
-                    <!-- REPLACE WITH YOUR ACTUAL WEB3FORMS ACCESS KEY -->
-                    <input type="hidden" name="access_key" value="e374041d-346e-4077-bf89-2b69950967ac"> 
-                    <input type="hidden" name="subject" value="New Inquiry from PixelRoot Website">
-                    <input type="hidden" name="redirect" value="https://pixelrootstudio.in/thanks.html">
-
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Name</label>
-                            <input type="text" name="name" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="Your Name">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Email</label>
-                            <input type="email" name="email" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="hello@company.com">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Message</label>
-                            <textarea name="message" rows="4" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="Tell us about your project..."></textarea>
-                        </div>
-                        <button type="submit" onclick="if(this.form.checkValidity()){this.innerHTML='Thankyou <i class=\'fa-solid fa-face-smile ml-2\'></i>'}" class="cursor-hover w-full bg-yellow-400 hover:bg-white text-black font-bold py-4 rounded-xl transition transform active:scale-95 shadow-lg shadow-yellow-400/20">
-                            Send Message
-                        </button>
-                    </div>
-                </form>
+                <div class="bg-zinc-900/30 rounded-3xl border border-white/10 reveal-on-scroll relative overflow-hidden h-full" style="transition-delay: 0.2s;">
+    
+    <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" class="p-8 h-full flex flex-col justify-center transition-opacity duration-500">
+        <input type="hidden" name="access_key" value="e374041d-346e-4077-bf89-2b69950967ac"> 
+        <input type="hidden" name="subject" value="New Inquiry from PixelRoot Website">
+        <div class="space-y-6">
+            <div>
+                <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Name</label>
+                <input type="text" name="name" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="Your Name">
             </div>
+            <div>
+                <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Email</label>
+                <input type="email" name="email" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="hello@company.com">
+            </div>
+            <div>
+                <label class="block text-slate-400 text-sm font-bold mb-2 uppercase tracking-wide">Message</label>
+                <textarea name="message" rows="4" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 transition placeholder-slate-600" placeholder="Tell us about your project..."></textarea>
+            </div>
+            <button type="submit" id="submit-btn" class="cursor-hover w-full bg-yellow-400 hover:bg-white text-black font-bold py-4 rounded-xl transition transform active:scale-95 shadow-lg shadow-yellow-400/20">
+                Send Message
+            </button>
         </div>
+    </form>
+
+    <div id="success-message" class="hidden absolute inset-0 bg-zinc-900 z-20 flex flex-col items-center justify-center text-center p-8 transition-opacity duration-500">
+        <div class="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,215,0,0.4)] animate-bounce">
+            <i class="fa-solid fa-check text-4xl text-black"></i>
+        </div>
+        <h3 class="text-3xl font-bold text-white mb-2">Thank You! <i class="fa-solid fa-face-smile text-yellow-400"></i></h3>
+        <p class="text-slate-400 text-lg mb-8">We have received your message.<br>We will get back to you shortly.</p>
+        
+        <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden max-w-xs mx-auto">
+            <div id="timer-bar" class="h-full bg-yellow-400 w-full"></div>
+        </div>
+        <p class="text-xs text-slate-500 mt-3">Returning to form in 15 seconds...</p>
+    </div>
+
+</div>
     </section>
 
     <!-- Footer -->
@@ -1278,6 +1290,78 @@ if(mobileBtn && mobileMenu) {
                 }
             })
             .catch(e => { if(trackarooVersionInfo) trackarooVersionInfo.innerText = "Version Check: Offline"; });
+            
+            // --- CONTACT FORM SUBMISSION LOGIC ---
+const form = document.getElementById('contact-form');
+const successMsg = document.getElementById('success-message');
+const submitBtn = document.getElementById('submit-btn');
+const timerBar = document.getElementById('timer-bar');
+
+if(form) {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // STOP the default redirect (Fixes 404 error)
+        
+        const originalBtnText = submitBtn.innerHTML;
+        
+        // 1. Show Loading State
+        submitBtn.innerHTML = 'Sending... <i class="fa-solid fa-spinner fa-spin ml-2"></i>';
+        submitBtn.disabled = true;
+
+        // 2. Submit Data to Web3Forms using FETCH (Background)
+        const formData = new FormData(form);
+        const object = Object.fromEntries(formData);
+        const json = JSON.stringify(object);
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: json
+        })
+        .then(async (response) => {
+            if (response.status == 200) {
+                // 3. Success! Swap Form with Success Message
+                form.classList.add('opacity-0'); // Fade out form
+                setTimeout(() => {
+                    form.classList.add('invisible'); // Hide form
+                    successMsg.classList.remove('hidden');
+                    successMsg.classList.add('flex'); // Show success
+                    
+                    // Animate the timer bar
+                    timerBar.style.transition = 'none';
+                    timerBar.style.width = '100%';
+                    setTimeout(() => {
+                        timerBar.style.transition = 'width 15s linear';
+                        timerBar.style.width = '0%';
+                    }, 50);
+                }, 300);
+
+                // 4. Wait 15 Seconds then Reset
+                setTimeout(() => {
+                    successMsg.classList.remove('flex');
+                    successMsg.classList.add('hidden'); // Hide success
+                    form.classList.remove('invisible');
+                    form.classList.remove('opacity-0'); // Show form
+                    
+                    form.reset(); // Clear inputs
+                    submitBtn.innerHTML = originalBtnText; // Reset button
+                    submitBtn.disabled = false;
+                }, 15000); // 15000ms = 15 seconds
+
+            } else {
+                submitBtn.innerHTML = "Error. Please try again.";
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            submitBtn.innerHTML = "Something went wrong!";
+            submitBtn.disabled = false;
+        });
+    });
+}
     </script>
 </body>
 </html>
